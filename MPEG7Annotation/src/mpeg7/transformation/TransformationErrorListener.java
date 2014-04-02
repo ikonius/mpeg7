@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package mpeg7.transformation;
 
 import javax.xml.transform.ErrorListener;
@@ -16,7 +10,7 @@ import org.apache.log4j.Priority;
  * @author Patti Spala <pd.spala@gmail.com>
  */
 public class TransformationErrorListener implements ErrorListener{
-      private static Logger logger = Logger.getLogger(X3DMPEG7Transformer.class);
+      private static final Logger logger = Logger.getLogger(MP7Generator.class);
 
     @Override
     public void warning(TransformerException e) throws TransformerException {

@@ -28,6 +28,7 @@ public class IFSDetector extends GeometryDetector {
 
     public IFSDetector(Document doc) {
         super(doc);
+
     }
 
     @Override
@@ -39,7 +40,7 @@ public class IFSDetector extends GeometryDetector {
         ArrayList<String> resultedIFSExtractionList = new ArrayList<>();
         StringBuilder IFSStringBuilder = new StringBuilder();
         try {
-            getDoc().getDocumentElement().normalize();
+            //getDoc().getDocumentElement().normalize();
             XPath xPath = XPathFactory.newInstance().newXPath();
             NodeList ifsSet = (NodeList) xPath.evaluate("//Shape/IndexedFaceSet", getDoc().getDocumentElement(), XPathConstants.NODESET);
             for (int p = 0; p < ifsSet.getLength(); p++) {
@@ -87,6 +88,7 @@ public class IFSDetector extends GeometryDetector {
                 IFSStringBuilder.append(resultedIFSExtractionList.get(i));
                 IFSStringBuilder.append("#");
             }
+            getParamMap().put("pointsExtraction", IFSStringBuilder.toString());
         } catch (IOException | XPathExpressionException e) {
             Logger.getLogger(ExtrusionDetector.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -107,10 +109,9 @@ public class IFSDetector extends GeometryDetector {
             while (i.hasNext()) {
                 Map.Entry me = (Map.Entry) i.next();
                 for (String data : (String[]) me.getValue()) {
-                    writer.write(data);
-                    writer.newLine();
-                }
-                getWriter().newLine();
+                    getWriter().write(data);
+                    getWriter().newLine();
+                }                
             }
             getWriter().close();
         } catch (IOException e) {

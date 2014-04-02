@@ -12,10 +12,12 @@ package storage.helpers;
 public class X3DResourceDetail {
 
     public String resourceName;
+    public String resourceFileName;
     public String parentPath;
 
-    public X3DResourceDetail(String name, String path) {
+    public X3DResourceDetail(String name, String filename, String path) {
         this.resourceName = name;
+        this.resourceFileName = filename;
         this.parentPath = path;
     }
 }

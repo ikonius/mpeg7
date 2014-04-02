@@ -20,9 +20,11 @@ public abstract class GeometryDetector {
     private BufferedWriter writer;
     private String resultExtraction;
     private Document doc;
+    private final HashMap<String, String> paramMap;
     
     public GeometryDetector(Document doc){
-        this.doc = doc;       
+        this.doc = doc;
+        this.paramMap = new HashMap<>();
     }
 
     public File getFile() {
@@ -54,8 +56,13 @@ public abstract class GeometryDetector {
     }
 
     public void setDoc(Document doc) {
-        this.doc = doc;
+        this.doc = doc;        
     }
+
+    public HashMap<String, String> getParamMap() {
+        return paramMap;
+    }
+    
     
     public abstract void processShapes();
     public abstract String writeParamsToFile(HashMap<String, String[]> dictMap, File file, BufferedWriter writer);

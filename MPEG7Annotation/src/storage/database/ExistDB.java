@@ -5,18 +5,23 @@
  */
 package storage.database;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.transform.OutputKeys;
+import static org.apache.commons.io.FilenameUtils.removeExtension;
 import org.exist.storage.serializers.EXistOutputKeys;
 import org.xmldb.api.DatabaseManager;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.Database;
 import org.xmldb.api.base.ResourceIterator;
 import org.xmldb.api.base.ResourceSet;
+import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
 import org.xmldb.api.modules.XPathQueryService;
 import storage.helpers.CollectionDetail;
@@ -71,13 +76,13 @@ public class ExistDB {
             database.setProperty("ssl-enable", prop.getProperty("exist.sslOn"));
             DatabaseManager.registerDatabase(database);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             if (config != null) {
                 try {
                     config.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -93,7 +98,7 @@ public class ExistDB {
      * @throws Exception
      */
     public List<CollectionDetail> listX3DCollections() throws Exception {
-        
+
         String baseCollection;
         Properties prop = new Properties();
         InputStream config = null;
@@ -120,13 +125,13 @@ public class ExistDB {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             if (config != null) {
                 try {
                     config.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -172,13 +177,13 @@ public class ExistDB {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             if (config != null) {
                 try {
                     config.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -210,11 +215,45 @@ public class ExistDB {
         while (results.hasMoreResources()) {
             XMLResource res = (XMLResource) results.nextResource();
             childRes.add(new X3DResourceDetail(
+                    removeExtension((String) res.getDocumentId()),
                     (String) res.getDocumentId(),
                     res.getParentCollection().getName())
             );
         }
         col.close();
         return childRes;
+    }
+
+    public Object retrieveDocument(X3DResourceDetail detail) throws Exception {
+        Collection col = DatabaseManager.getCollection(URI + detail.parentPath);
+        col.setProperty(OutputKeys.INDENT, "yes");
+        col.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
+        col.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
+        XMLResource resource = (XMLResource) col.getResource(detail.resourceFileName);
+        Object resContent = resource.getContent();
+        if (col.isOpen()) {
+            col.close();
+        }
+        return resContent;
+
+    }
+
+    public boolean storeResource(X3DResourceDetail x3dResource, File localFile) {
+        try {
+            Collection col = DatabaseManager.getCollection(URI + x3dResource.parentPath, "admin", "admin");
+            col.setProperty(OutputKeys.INDENT, "yes");
+            col.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
+            col.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
+
+          
+            XMLResource resource = (XMLResource) col.createResource(localFile.getName(), "XMLResource");
+            resource.setContent(localFile);
+            col.storeResource(resource);
+            return true;
+        } catch (XMLDBException e) {
+            Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
+            return false;
+        }
+
     }
 }

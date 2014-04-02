@@ -85,6 +85,8 @@ public class ExtrusionDetector extends GeometryDetector {
                 ExtrBBoxStringBuilder.append("#");
 
             }
+            getParamMap().put("extrusionPointsExtraction", ExtrShapeStringBuilder.toString());
+            getParamMap().put("extrusionBBoxParams", ExtrBBoxStringBuilder.toString());
         } catch (IOException | XPathExpressionException e) {
             Logger.getLogger(ExtrusionDetector.class.getName()).log(Level.SEVERE, null, e);
         }
