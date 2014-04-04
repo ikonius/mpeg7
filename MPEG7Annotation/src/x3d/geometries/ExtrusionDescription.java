@@ -14,20 +14,21 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Markos
  */
 public class ExtrusionDescription {
-
+    private static final Logger logger = Logger.getLogger(ExtrusionDescription.class);
     public static void main(String[] args) {
         String command[] = new String[1];
         command[0] = "Extrusion.txt";
         try {
             ExtrusionDescription(command);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            logger.error(e);
         }
 
     }

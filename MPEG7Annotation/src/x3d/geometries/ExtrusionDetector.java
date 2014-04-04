@@ -9,12 +9,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -25,6 +24,8 @@ import org.w3c.dom.NodeList;
  */
 public class ExtrusionDetector extends GeometryDetector {
 
+    private static final Logger logger = Logger.getLogger(ExtrusionDetector.class);
+
     public ExtrusionDetector(Document doc) {
         super(doc);
     }
@@ -32,8 +33,8 @@ public class ExtrusionDetector extends GeometryDetector {
     @Override
     public void processShapes() {
         String crossSectionAttrib, spineAttrib, scaleAttrib, orientAttrib;
-        ArrayList<String> resultedExtrExtractionList = new ArrayList<>();
-        ArrayList<String> resultedExtrBBoxList = new ArrayList<>();
+        ArrayList<String> resultedExtrExtractionList = new ArrayList<String>();
+        ArrayList<String> resultedExtrBBoxList = new ArrayList<String>();
         StringBuilder ExtrShapeStringBuilder = new StringBuilder();
         StringBuilder ExtrBBoxStringBuilder = new StringBuilder();
 
@@ -45,7 +46,7 @@ public class ExtrusionDetector extends GeometryDetector {
 
             for (int i = 0; i < extrSet.getLength(); i++) {
                 Element elem = (Element) extrSet.item(i);
-                HashMap<String, String[]> dictParams = new HashMap<>();
+                HashMap<String, String[]> dictParams = new HashMap<String, String[]>();
                 scaleAttrib = null;
                 orientAttrib = null;
 
@@ -63,7 +64,7 @@ public class ExtrusionDetector extends GeometryDetector {
                 }
                 setFile(new File("Extrusion.txt"));
 
-                String coordTempFile = writeParamsToFile(dictParams,getFile(), getWriter());
+                String coordTempFile = writeParamsToFile(dictParams, getFile(), getWriter());
                 //String coordTempFile = writeExtrusionParamsToFile(crossSectionAttrib, spineAttrib, scaleAttrib, orientAttrib, file, bw);
 
                 String[] ExtrTempFile = {coordTempFile};
@@ -87,8 +88,10 @@ public class ExtrusionDetector extends GeometryDetector {
             }
             getParamMap().put("extrusionPointsExtraction", ExtrShapeStringBuilder.toString());
             getParamMap().put("extrusionBBoxParams", ExtrBBoxStringBuilder.toString());
-        } catch (IOException | XPathExpressionException e) {
-            Logger.getLogger(ExtrusionDetector.class.getName()).log(Level.SEVERE, null, e);
+        } catch (IOException e) {
+            logger.error(e);
+        } catch (XPathExpressionException e) {
+            logger.error(e);
         }
 
     }
@@ -102,22 +105,21 @@ public class ExtrusionDetector extends GeometryDetector {
             }
             file.createNewFile();
             setWriter(new BufferedWriter(new FileWriter(file)));
-            
+
             Set set = dictMap.entrySet();
             Iterator i = set.iterator();
-            while(i.hasNext()){
-                Map.Entry me = (Map.Entry)i.next();
+            while (i.hasNext()) {
+                Map.Entry me = (Map.Entry) i.next();
                 getWriter().write(me.getKey().toString());
                 getWriter().newLine();
                 getWriter().write(me.getValue().toString());
                 getWriter().newLine();
-            }            
+            }
             getWriter().close();
         } catch (IOException e) {
-            Logger.getLogger(ExtrusionDetector.class.getName()).log(Level.SEVERE, null, e);
+            logger.error(e);
         }
         return file.getAbsolutePath();
     }
-
 
 }

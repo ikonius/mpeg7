@@ -10,7 +10,7 @@ import org.apache.log4j.Priority;
  * @author Patti Spala <pd.spala@gmail.com>
  */
 public class TransformationErrorListener implements ErrorListener{
-      private static final Logger logger = Logger.getLogger(MP7Generator.class);
+      private static final Logger logger = Logger.getLogger(TransformationErrorListener.class);
 
     @Override
     public void warning(TransformerException e) throws TransformerException {

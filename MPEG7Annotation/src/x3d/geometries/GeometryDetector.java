@@ -24,7 +24,7 @@ public abstract class GeometryDetector {
     
     public GeometryDetector(Document doc){
         this.doc = doc;
-        this.paramMap = new HashMap<>();
+        this.paramMap = new HashMap<String, String>();
     }
 
     public File getFile() {

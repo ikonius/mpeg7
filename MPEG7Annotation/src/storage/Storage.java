@@ -1,11 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package storage;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,8 +64,8 @@ public class Storage {
                                     ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
                                     extrusionDetector.processShapes();
                                     
-                                    MP7Generator mp7Generator = new MP7Generator(detail, extrusionDetector.getParamMap());
-                                    mp7Generator.generateDescription();
+                                    //MP7Generator mp7Generator = new MP7Generator(detail, extrusionDetector.getParamMap());
+                                    //mp7Generator.generateDescription();
                                 }
 
                             }

@@ -6,15 +6,11 @@
 package storage.database;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.transform.OutputKeys;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
+import org.apache.log4j.Logger;
 import org.exist.storage.serializers.EXistOutputKeys;
 import org.xmldb.api.DatabaseManager;
 import org.xmldb.api.base.Collection;
@@ -33,9 +29,10 @@ import storage.helpers.X3DResourceDetail;
  */
 public class ExistDB {
 
-    protected static String driver;
-    protected static String URI;
-    protected static Database database;
+    private static final Logger logger = Logger.getLogger(ExistDB.class);
+    protected String driver;
+    protected String URI;
+    protected Database database;
 
     public ExistDB() {
     }
@@ -45,7 +42,7 @@ public class ExistDB {
     }
 
     public void setDriver(String driver) {
-        ExistDB.driver = driver;
+        this.driver = driver;
     }
 
     public String getURI() {
@@ -53,7 +50,7 @@ public class ExistDB {
     }
 
     public void setURI(String URI) {
-        ExistDB.URI = URI;
+        this.URI = URI;
     }
 
     /**
@@ -64,28 +61,12 @@ public class ExistDB {
      * @throws Exception
      */
     public void registerInstance() throws Exception {
-        Properties prop = new Properties();
-        InputStream config = null;
-        try {
-            config = getClass().getResourceAsStream("connection.properties");
-            prop.load(config);
-            URI = prop.getProperty("exist.URI");
-            driver = prop.getProperty("exist.driver");
-            Class<?> cl = Class.forName(driver);
-            database = (Database) cl.newInstance();
-            database.setProperty("ssl-enable", prop.getProperty("exist.sslOn"));
-            DatabaseManager.registerDatabase(database);
-        } catch (IOException e) {
-            Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
-        } finally {
-            if (config != null) {
-                try {
-                    config.close();
-                } catch (IOException e) {
-                    Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
+        this.URI = "xmldb:exist://localhost:8899/exist/xmlrpc";
+        this.driver = "org.exist.xmldb.DatabaseImpl";
+        Class<?> cl = Class.forName(this.driver);
+        this.database = (Database) cl.newInstance();
+        this.database.setProperty("ssl-enable", "false");
+        DatabaseManager.registerDatabase(this.database);
     }
 
     /**
@@ -100,44 +81,23 @@ public class ExistDB {
     public List<CollectionDetail> listX3DCollections() throws Exception {
 
         String baseCollection;
-        Properties prop = new Properties();
-        InputStream config = null;
         Collection baseCol;
-        List<CollectionDetail> childCols = new ArrayList<>();
-        try {
-            config = getClass().getResourceAsStream("connection.properties");
-            prop.load(config);
-            baseCollection = prop.getProperty("exist.baseX3DCollection");
-            baseCol = DatabaseManager.getCollection(URI + baseCollection);
-            baseCol.setProperty(OutputKeys.INDENT, "yes");
-            baseCol.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
-            baseCol.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
-
-            if (baseCol.getChildCollectionCount() > 0) {
-                //childCols = baseCol.listChildCollections();
-                for (String child : baseCol.listChildCollections()) {
-                    childCols.add(new CollectionDetail(child, baseCol.getName()));
-                }
-            }
-
-            if (baseCol.isOpen()) {
-                baseCol.close();
-            }
-
-        } catch (IOException e) {
-            Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
-        } finally {
-            if (config != null) {
-                try {
-                    config.close();
-                } catch (IOException e) {
-                    Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
-                }
+        List<CollectionDetail> childCols = new ArrayList<CollectionDetail>();
+        baseCollection = "/db/apps/annotation/data/Examples/";
+        baseCol = DatabaseManager.getCollection(URI + baseCollection);
+        baseCol.setProperty(OutputKeys.INDENT, "yes");
+        baseCol.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
+        baseCol.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
+        if (baseCol.getChildCollectionCount() > 0) {
+            //childCols = baseCol.listChildCollections();
+            for (String child : baseCol.listChildCollections()) {
+                childCols.add(new CollectionDetail(child, baseCol.getName()));
             }
         }
-
+        if (baseCol.isOpen()) {
+            baseCol.close();
+        }
         return childCols;
-
     }
 
     /**
@@ -153,43 +113,22 @@ public class ExistDB {
 
         // baseCollection can be null when we want to get the base repository -  the url is then defined in 
         String baseCollection;
-        Properties prop = new Properties();
-        InputStream config = null;
         Collection baseCol;
-        List<CollectionDetail> childCols = new ArrayList<>();
-        try {
-            config = getClass().getResourceAsStream("connection.properties");
-            prop.load(config);
-            baseCollection = prop.getProperty("exist.baseX3DCollection");
-            baseCol = DatabaseManager.getCollection(URI + baseCollection + childPath);
-            baseCol.setProperty(OutputKeys.INDENT, "yes");
-            baseCol.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
-            baseCol.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
-
-            if (baseCol.getChildCollectionCount() > 0) {
-                for (String child : baseCol.listChildCollections()) {
-                    childCols.add(new CollectionDetail(child, baseCol.getName()));
-                }
-            }
-
-            if (baseCol.isOpen()) {
-                baseCol.close();
-            }
-
-        } catch (IOException e) {
-            Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
-        } finally {
-            if (config != null) {
-                try {
-                    config.close();
-                } catch (IOException e) {
-                    Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
-                }
+        List<CollectionDetail> childCols = new ArrayList<CollectionDetail>();
+        baseCollection = "/db/apps/annotation/data/Examples/";
+        baseCol = DatabaseManager.getCollection(URI + baseCollection + childPath);
+        baseCol.setProperty(OutputKeys.INDENT, "yes");
+        baseCol.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
+        baseCol.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
+        if (baseCol.getChildCollectionCount() > 0) {
+            for (String child : baseCol.listChildCollections()) {
+                childCols.add(new CollectionDetail(child, baseCol.getName()));
             }
         }
-
+        if (baseCol.isOpen()) {
+            baseCol.close();
+        }
         return childCols;
-
     }
 
     /**
@@ -206,7 +145,7 @@ public class ExistDB {
         col.setProperty(OutputKeys.INDENT, "yes");
         col.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
         col.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
-        List<X3DResourceDetail> childRes = new ArrayList<>();
+        List<X3DResourceDetail> childRes = new ArrayList<X3DResourceDetail>();
 
         XPathQueryService service = (XPathQueryService) col.getService("XPathQueryService", "1.0");
         ResourceSet resultSet = service.query("//X3D");
@@ -237,6 +176,21 @@ public class ExistDB {
         return resContent;
 
     }
+    
+    public Object retrieveModule(String moduleName) throws Exception{
+        String modulePath = "/db/apps/annotation/modules/";
+        Collection col = DatabaseManager.getCollection(URI + modulePath);
+        col.setProperty(OutputKeys.INDENT, "yes");
+        col.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
+        col.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
+        XMLResource resource = (XMLResource) col.getResource(moduleName);
+        Object resContent = resource.getContent();
+        if (col.isOpen()) {
+            col.close();
+        }
+        return resContent;
+
+    }
 
     public boolean storeResource(X3DResourceDetail x3dResource, File localFile) {
         try {
@@ -245,13 +199,12 @@ public class ExistDB {
             col.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
             col.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
 
-          
             XMLResource resource = (XMLResource) col.createResource(localFile.getName(), "XMLResource");
             resource.setContent(localFile);
             col.storeResource(resource);
             return true;
         } catch (XMLDBException e) {
-            Logger.getLogger(ExistDB.class.getName()).log(Level.SEVERE, null, e);
+            logger.error(e);
             return false;
         }
 

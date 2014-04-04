@@ -10,12 +10,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -26,18 +25,20 @@ import org.w3c.dom.NodeList;
  */
 public class IFSDetector extends GeometryDetector {
 
+    private static final Logger logger = Logger.getLogger(IFSDetector.class);
+
     public IFSDetector(Document doc) {
         super(doc);
-
+        
     }
-
+    
     @Override
     public void processShapes() {
         String[] tokenizedCoord = null;
         String[] tokenizedPoint = null;
-
+        
         List totalPointParts = null;
-        ArrayList<String> resultedIFSExtractionList = new ArrayList<>();
+        ArrayList<String> resultedIFSExtractionList = new ArrayList<String>();
         StringBuilder IFSStringBuilder = new StringBuilder();
         try {
             //getDoc().getDocumentElement().normalize();
@@ -45,27 +46,27 @@ public class IFSDetector extends GeometryDetector {
             NodeList ifsSet = (NodeList) xPath.evaluate("//Shape/IndexedFaceSet", getDoc().getDocumentElement(), XPathConstants.NODESET);
             for (int p = 0; p < ifsSet.getLength(); p++) {
                 Element elem = (Element) ifsSet.item(p);
-                HashMap<String, String[]> coordDictParams = new HashMap<>();
-                HashMap<String, String[]> pointDictParams = new HashMap<>();
-
+                HashMap<String, String[]> coordDictParams = new HashMap<String, String[]>();
+                HashMap<String, String[]> pointDictParams = new HashMap<String, String[]>();
+                
                 String coordIndexAttrib = elem.getAttribute("coordIndex");
-
+                
                 int lastMinusOnePosition = coordIndexAttrib.lastIndexOf("-1");
                 String stringWithoutLastMinusOne = coordIndexAttrib.substring(0, lastMinusOnePosition);
                 tokenizedCoord = stringWithoutLastMinusOne.split(" -1 ");
-
+                
                 Element coordElem = (Element) elem.getElementsByTagName("Coordinate").item(0);
                 String pointAttrib = coordElem.getAttribute("point");
                 tokenizedPoint = pointAttrib.split(" ");
                 totalPointParts = new ArrayList();
-
+                
                 if (tokenizedPoint.length > 2) {
-
+                    
                     for (int i = 0; i < tokenizedPoint.length; i = i + 3) {
                         String pointPart = tokenizedPoint[i].concat(" " + tokenizedPoint[i + 1] + " " + tokenizedPoint[i + 2]);
                         totalPointParts.add(pointPart);
                     }
-
+                    
                 } else {
                     //Unique case: an IndexedFaceSet without points (authoring error!)
                     totalPointParts.add("0 0 0");
@@ -89,11 +90,13 @@ public class IFSDetector extends GeometryDetector {
                 IFSStringBuilder.append("#");
             }
             getParamMap().put("pointsExtraction", IFSStringBuilder.toString());
-        } catch (IOException | XPathExpressionException e) {
-            Logger.getLogger(ExtrusionDetector.class.getName()).log(Level.SEVERE, null, e);
+        } catch (IOException e) {
+            logger.error(e);
+        } catch (XPathExpressionException e) {
+            logger.error(e);
         }
     }
-
+    
     @Override
     public String writeParamsToFile(HashMap<String, String[]> dictMap, File file, BufferedWriter writer) {
         try {
@@ -103,7 +106,7 @@ public class IFSDetector extends GeometryDetector {
             }
             file.createNewFile();
             setWriter(new BufferedWriter(new FileWriter(file)));
-
+            
             Set set = dictMap.entrySet();
             Iterator i = set.iterator();
             while (i.hasNext()) {
@@ -115,9 +118,9 @@ public class IFSDetector extends GeometryDetector {
             }
             getWriter().close();
         } catch (IOException e) {
-            Logger.getLogger(ExtrusionDetector.class.getName()).log(Level.SEVERE, null, e);
+            logger.error(e);
         }
         return file.getAbsolutePath();
     }
-
+    
 }
