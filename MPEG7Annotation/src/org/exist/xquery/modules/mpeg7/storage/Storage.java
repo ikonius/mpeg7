@@ -1,4 +1,4 @@
-package storage;
+package org.exist.xquery.modules.mpeg7.storage;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -7,13 +7,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import mpeg7.transformation.MP7Generator;
+import org.exist.xquery.modules.mpeg7.transformation.MP7Generator;
 import org.w3c.dom.Document;
-import storage.database.ExistDB;
-import storage.helpers.CollectionDetail;
-import storage.helpers.X3DResourceDetail;
-import x3d.geometries.ExtrusionDetector;
-import x3d.geometries.IFSDetector;
+import org.exist.xquery.modules.mpeg7.storage.database.ExistDB;
+import org.exist.xquery.modules.mpeg7.storage.helpers.CollectionDetail;
+import org.exist.xquery.modules.mpeg7.storage.helpers.X3DResourceDetail;
+import org.exist.xquery.modules.mpeg7.x3d.geometries.ExtrusionDetector;
+import org.exist.xquery.modules.mpeg7.x3d.geometries.IFSDetector;
 
 /**
  *

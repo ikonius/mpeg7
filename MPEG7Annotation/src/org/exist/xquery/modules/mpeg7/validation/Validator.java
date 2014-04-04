@@ -1,4 +1,4 @@
-package mpeg7.validation;
+package org.exist.xquery.modules.mpeg7.validation;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import org.apache.xmlbeans.XmlOptions;
  */
 public class Validator {
 
-    private static final Logger logger = Logger.getLogger(Validator.class);
+    private static final Logger logger = Logger.getLogger("mpeg7");
     private final File inputFile;
     private final XmlOptions xmlOptions;
     private final ArrayList validationErrors;
@@ -58,11 +58,9 @@ public class Validator {
             this.mpeg7Document.save(this.inputFile);
             boolean valid = this.mpeg7Document.validate(xmlOptions);
             if (!valid) {
-
-                logger.warn("Invalid MP7 File Description!");
+                logger.warn("MPEG7 Document: " + this.inputFile.getName() + " validation result: " + valid);
                 Iterator iter = this.validationErrors.iterator();
-                while (iter.hasNext()) {
-                    //Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, "Validation Error >> {0}", iter.next());
+                while (iter.hasNext()) {                    
                     logger.error("Validation Error >> " + iter.next());
                 }
             }

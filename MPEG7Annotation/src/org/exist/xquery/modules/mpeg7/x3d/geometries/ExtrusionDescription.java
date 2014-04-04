@@ -7,7 +7,7 @@
 //Thirdly: what about inverse direction? Do the normals change? CCW still aplies?
 //The lids do not work
 //Fix the face directions to point outwards
-package x3d.geometries;
+package org.exist.xquery.modules.mpeg7.x3d.geometries;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

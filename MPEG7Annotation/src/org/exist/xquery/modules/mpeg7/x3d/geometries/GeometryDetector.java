@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package x3d.geometries;
+package org.exist.xquery.modules.mpeg7.x3d.geometries;
 
 import java.io.BufferedWriter;
 import java.io.File;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package storage.helpers;
+package org.exist.xquery.modules.mpeg7.storage.helpers;
 
 /**
  *

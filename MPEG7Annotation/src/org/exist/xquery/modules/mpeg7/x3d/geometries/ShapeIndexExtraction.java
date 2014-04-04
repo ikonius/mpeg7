@@ -4,7 +4,7 @@
 // -Rescan the entire project for any instance where the contents of Indexes are used as
 // matrix indexes: there is a -1 discrepancy between Matlab and Java which seems to have
 // accumulated to -2 and -3 already.
-package x3d.geometries;
+package org.exist.xquery.modules.mpeg7.x3d.geometries;
 
 import java.io.BufferedReader;
 import java.io.File;

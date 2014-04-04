@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package storage.database;
+package org.exist.xquery.modules.mpeg7.storage.database;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,8 +20,8 @@ import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
 import org.xmldb.api.modules.XPathQueryService;
-import storage.helpers.CollectionDetail;
-import storage.helpers.X3DResourceDetail;
+import org.exist.xquery.modules.mpeg7.storage.helpers.CollectionDetail;
+import org.exist.xquery.modules.mpeg7.storage.helpers.X3DResourceDetail;
 
 /**
  *
