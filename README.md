@@ -28,7 +28,7 @@ to build the extensions directory. Edit the file extensions/build.properties and
 
     import module namespace unzip = "ttp://exist-db.org/xquery/mpeg7";
 
-### mpeg7:batch-transform($path as string)
+### mpeg7:batch-transform($path as item())
 
 This function extracts the MPEG-7 descriptions of all .x3d files stored in the given $path parameter, where $path is the relative path of the collection in the database.
 
