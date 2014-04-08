@@ -16,7 +16,7 @@ Clone this repository, copy the mpeg7 folder from the src project folder to $EXI
 
     $EXIST_HOME build.sh or build.bat extension-modules
     
-to build the extensions directory. Edit the file extensions/build.properties enable the extension as:
+to build the extensions directory. Edit the file extensions/build.properties and enable the extension as:
 
 ###
 
