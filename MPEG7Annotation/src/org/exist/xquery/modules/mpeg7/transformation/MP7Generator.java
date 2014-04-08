@@ -121,7 +121,7 @@ public class MP7Generator extends ExistDB {
 }
 
 class TransformationErrorListener implements ErrorListener{
-      private static final Logger logger = Logger.getLogger("mpeg7");
+      private static final Logger logger = Logger.getLogger(TransformationErrorListener.class);
 
     @Override
     public void warning(TransformerException e) throws TransformerException {

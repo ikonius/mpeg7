@@ -1,7 +1,6 @@
 package org.exist.xquery.modules.mpeg7;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -9,7 +8,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.exist.xquery.modules.mpeg7.transformation.MP7Generator;
 import org.apache.log4j.Logger;
 import org.exist.dom.QName;
-import org.exist.xmldb.XmldbURI;
 import org.exist.xquery.BasicFunction;
 import org.exist.xquery.Cardinality;
 import org.exist.xquery.FunctionSignature;
@@ -20,7 +18,6 @@ import org.exist.xquery.value.FunctionParameterSequenceType;
 import org.exist.xquery.value.FunctionReturnSequenceType;
 import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.SequenceType;
-import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 import org.exist.xquery.value.ValueSequence;
 import org.w3c.dom.Document;
@@ -78,7 +75,7 @@ public class BatchTransform extends BasicFunction {
                     ifsDetector.processShapes();
                     ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
                     extrusionDetector.processShapes();                    
-                    logger.info(XmldbURI.ROOT_COLLECTION_URI + "/x3d_to_mpeg7_transform.xsl");
+                    
                     MP7Generator mp7Generator = new MP7Generator(detail, extrusionDetector.getParamMap(), xslSource);
                     mp7Generator.generateDescription(); 
 

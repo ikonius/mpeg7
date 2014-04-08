@@ -61,7 +61,7 @@ public class ExistDB {
      * @throws Exception
      */
     public void registerInstance() throws Exception {
-        this.URI = "xmldb:exist://localhost:8899/exist/xmlrpc";
+        this.URI = "xmldb:exist://54.186.226.52/exist/xmlrpc";
         this.driver = "org.exist.xmldb.DatabaseImpl";
         Class<?> cl = Class.forName(this.driver);
         this.database = (Database) cl.newInstance();
@@ -194,7 +194,7 @@ public class ExistDB {
 
     public boolean storeResource(X3DResourceDetail x3dResource, File localFile) {
         try {
-            Collection col = DatabaseManager.getCollection(URI + x3dResource.parentPath, "admin", "admin");
+            Collection col = DatabaseManager.getCollection(URI + x3dResource.parentPath, "admin", "@pds2177");
             col.setProperty(OutputKeys.INDENT, "yes");
             col.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
             col.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
