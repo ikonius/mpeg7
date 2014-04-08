@@ -1,9 +1,9 @@
 ##X3D to MPEG7 eXist-db Extension Module
 
-(demo: http://exist.webcatts.com)
-
 An XQuery module for extracting MPEG-7 annotation descriptions from .x3d files stored in the eXist-db database.
 This module currently exposes one function for performing this task (validation against the extended MPEG-7 XSD Schema automatically included). 
+
+You may find a demo of a working web app at: http://exist.webcatts.com
 
 ## Installation
 
