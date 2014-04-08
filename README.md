@@ -7,9 +7,11 @@ This module currently exposes one function for performing this task (validation 
 
 ## Installation
 
-This module requires eXist-db 2.0 and has been tested with 2.2RC. The following steps require to stop the database from running, and start it again once installation complete.
+This module requires eXist-db 2.0 and has been tested with 2.2RC. 
 
-Next, clone this repository, copy the mpeg7 folder from the src project folder to $EXIST_HOME/extensions/modules/src/org/exist/xquery/modules and run 
+The following steps require to stop the database from running, and start it again once installation complete.
+
+Clone this repository, copy the mpeg7 folder from the src project folder to $EXIST_HOME/extensions/modules/src/org/exist/xquery/modules and run 
 ###
 
     $EXIST_HOME build.sh or build.bat extension-modules
