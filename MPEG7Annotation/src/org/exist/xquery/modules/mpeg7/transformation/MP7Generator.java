@@ -121,7 +121,7 @@ public class MP7Generator extends ExistDB {
 }
 
 class TransformationErrorListener implements ErrorListener{
-      private static final Logger logger = Logger.getLogger(TransformationErrorListener.class);
+      private static final Logger logger = Logger.getLogger("app.annotation");
 
     @Override
     public void warning(TransformerException e) throws TransformerException {

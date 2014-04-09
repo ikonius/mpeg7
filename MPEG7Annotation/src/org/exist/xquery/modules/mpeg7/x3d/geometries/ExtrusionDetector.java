@@ -24,7 +24,7 @@ import org.w3c.dom.NodeList;
  */
 public class ExtrusionDetector extends GeometryDetector {
 
-    private static final Logger logger = Logger.getLogger(ExtrusionDetector.class);
+    private static final Logger logger = Logger.getLogger("app.annotation");
 
     public ExtrusionDetector(Document doc) {
         super(doc);

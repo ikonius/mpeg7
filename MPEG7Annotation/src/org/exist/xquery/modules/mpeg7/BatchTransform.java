@@ -32,7 +32,7 @@ import org.exist.xquery.modules.mpeg7.x3d.geometries.IFSDetector;
  */
 public class BatchTransform extends BasicFunction {
 
-    private static final Logger logger = Logger.getLogger(BatchTransform.class);
+    private static final Logger logger = Logger.getLogger("app.annotation");
     public final static FunctionSignature signature = new FunctionSignature(
             new QName("batchTransform", MPEG7Module.NAMESPACE_URI, MPEG7Module.PREFIX),
             "Batch MPEG7 Transformer for .zip extracted Collection stored X3D resources.",

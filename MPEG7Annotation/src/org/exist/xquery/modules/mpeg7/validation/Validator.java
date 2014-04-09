@@ -17,7 +17,7 @@ import org.apache.xmlbeans.XmlOptions;
  */
 public class Validator {
 
-    private static final Logger logger = Logger.getLogger(Validator.class);
+    private static final Logger logger = Logger.getLogger("app.annotation");
     private final File inputFile;
     private final XmlOptions xmlOptions;
     private final ArrayList validationErrors;

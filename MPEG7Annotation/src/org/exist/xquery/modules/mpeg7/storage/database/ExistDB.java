@@ -29,7 +29,7 @@ import org.exist.xquery.modules.mpeg7.storage.helpers.X3DResourceDetail;
  */
 public class ExistDB {
 
-    private static final Logger logger = Logger.getLogger(ExistDB.class);
+    private static final Logger logger = Logger.getLogger("app.annotation");
     protected String driver;
     protected String URI;
     protected Database database;

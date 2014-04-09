@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
  * @author Markos
  */
 public class ExtrusionDescription {
-    private static final Logger logger = Logger.getLogger(ExtrusionDescription.class);
+    private static final Logger logger = Logger.getLogger("app.annotation");
     public static void main(String[] args) {
         String command[] = new String[1];
         command[0] = "Extrusion.txt";

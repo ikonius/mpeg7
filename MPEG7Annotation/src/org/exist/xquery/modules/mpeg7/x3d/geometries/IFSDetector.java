@@ -25,7 +25,7 @@ import org.w3c.dom.NodeList;
  */
 public class IFSDetector extends GeometryDetector {
 
-    private static final Logger logger = Logger.getLogger(IFSDetector.class);
+    private static final Logger logger = Logger.getLogger("app.annotation");
 
     public IFSDetector(Document doc) {
         super(doc);
