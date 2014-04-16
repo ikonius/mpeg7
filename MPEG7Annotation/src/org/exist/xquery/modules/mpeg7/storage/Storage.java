@@ -74,7 +74,7 @@ public class Storage {
                 }
             }
         } catch (Exception e) {
-           Logger.getLogger("app.annotation").log(Level.SEVERE, null, e);
+           Logger.getLogger(Storage.class.getName()).log(Level.SEVERE, null, e);
         }
 
     }

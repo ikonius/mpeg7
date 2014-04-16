@@ -1,10 +1,12 @@
 package org.exist.xquery.modules.mpeg7;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 import org.exist.xquery.modules.mpeg7.transformation.MP7Generator;
 import org.apache.log4j.Logger;
 import org.exist.dom.QName;
@@ -25,6 +27,8 @@ import org.exist.xquery.modules.mpeg7.storage.database.ExistDB;
 import org.exist.xquery.modules.mpeg7.storage.helpers.X3DResourceDetail;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.ExtrusionDetector;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.IFSDetector;
+import org.xml.sax.SAXException;
+import org.xmldb.api.base.XMLDBException;
 
 /**
  *
@@ -32,7 +36,8 @@ import org.exist.xquery.modules.mpeg7.x3d.geometries.IFSDetector;
  */
 public class BatchTransform extends BasicFunction {
 
-    private static final Logger logger = Logger.getLogger("app.annotation");
+    private static final Logger logger = Logger.getLogger(BatchTransform.class);
+
     public final static FunctionSignature signature = new FunctionSignature(
             new QName("batchTransform", MPEG7Module.NAMESPACE_URI, MPEG7Module.PREFIX),
             "Batch MPEG7 Transformer for .zip extracted Collection stored X3D resources.",
@@ -55,39 +60,58 @@ public class BatchTransform extends BasicFunction {
 
         try {
             String collectionPath = args[0].getStringValue();
+            int mpeg7counter = 0;
             ExistDB db = new ExistDB();
             db.registerInstance();
             String xslSource = db.retrieveModule("x3d_to_mpeg7_transform.xsl").toString();
             List<X3DResourceDetail> x3dResources = db.getX3DResources(collectionPath);
             if (!x3dResources.isEmpty()) {
+                logger.debug("No of X3D files: " + x3dResources.size());
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                DocumentBuilder builder = factory.newDocumentBuilder();
                 for (X3DResourceDetail detail : x3dResources) {
+                    try {
+                        logger.debug("Processing file: " + detail.resourceFileName);
+                        String x3dSource = db.retrieveDocument(detail).toString();
+                        Document doc = builder.parse(new ByteArrayInputStream(x3dSource.getBytes()));
+                        IFSDetector ifsDetector = new IFSDetector(doc);
+                        ifsDetector.processShapes();
+                        ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
+                        extrusionDetector.processShapes();
 
-                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    factory.setNamespaceAware(true);
-                    DocumentBuilder builder = factory.newDocumentBuilder();
+                        MP7Generator mp7Generator = new MP7Generator(detail, extrusionDetector.getParamMap(), xslSource);
+                        mpeg7counter = mp7Generator.generateDescription(mpeg7counter);
 
-                    String docSource = db.retrieveDocument(detail).toString();
-
-                    Document doc = builder.parse(new ByteArrayInputStream(docSource.getBytes()));
-                    //doc.getDocumentElement().normalize();
-
-                    IFSDetector ifsDetector = new IFSDetector(doc);
-                    ifsDetector.processShapes();
-                    ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
-                    extrusionDetector.processShapes();                    
-                    
-                    MP7Generator mp7Generator = new MP7Generator(detail, extrusionDetector.getParamMap(), xslSource);
-                    mp7Generator.generateDescription(); 
+                    } catch (XMLDBException ex) {
+                        logger.error("XMLDBException: ", ex);
+                    } catch (SAXException ex) {
+                        logger.error("SAXException: ", ex);
+                    } catch (IOException ex) {
+                        logger.error("IOException: ", ex);
+                    } catch (XPathExpressionException ex) {
+                        logger.error("XPathExpressionException: ", ex);
+                    }
 
                 }
             }
+            logger.debug("No of MPEG-7 files: " + mpeg7counter);
             result.add(new BooleanValue(true)); //todo cases
 
-        } catch (XPathException e) {
-            logger.error(e);
+        } catch (InstantiationException ex) {
+            logger.error("InstantiationException: ", ex);
             result.add(new BooleanValue(false));
-        } catch (Exception ex) {
-            logger.error(ex);
+        } catch (ParserConfigurationException ex) {
+            logger.error("ParserConfigurationException: ", ex);
+            result.add(new BooleanValue(false));
+        } catch (XMLDBException ex) {
+            logger.error("XMLDBException: ", ex);
+            result.add(new BooleanValue(false));
+        } catch (IllegalAccessException ex) {
+            logger.error("IllegalAccessException: ", ex);
+            result.add(new BooleanValue(false));
+        } catch (ClassNotFoundException ex) {
+            logger.error("ClassNotFoundException: ", ex);
             result.add(new BooleanValue(false));
         }
         return result;

@@ -17,7 +17,7 @@ import org.apache.xmlbeans.XmlOptions;
  */
 public class Validator {
 
-    private static final Logger logger = Logger.getLogger("app.annotation");
+    private static final Logger logger = Logger.getLogger(Validator.class);
     private final File inputFile;
     private final XmlOptions xmlOptions;
     private final ArrayList validationErrors;
@@ -57,20 +57,20 @@ public class Validator {
             this.mpeg7Document = Mpeg7Document.Factory.parse(this.inputFile);
             this.mpeg7Document.save(this.inputFile);
             boolean valid = this.mpeg7Document.validate(xmlOptions);
-            if (!valid) {
-                logger.warn("MPEG7 Document: " + this.inputFile.getName() + " validation result: " + valid);
+            logger.info("MPEG7 Document: " + this.inputFile.getName() + " validation result: " + valid);
+            if (!valid) {                
                 Iterator iter = this.validationErrors.iterator();
-                while (iter.hasNext()) {                    
+                while (iter.hasNext()) {
                     logger.error("Validation Error >> " + iter.next());
                 }
             }
             return valid;
         } catch (XmlException exXML) {
-            logger.error(exXML);
+            logger.error("XmlException: "+ exXML);
             return false;
 
         } catch (IOException exXML) {
-            logger.error(exXML);
+            logger.error("IOException: "+ exXML);
             return false;
         }
 

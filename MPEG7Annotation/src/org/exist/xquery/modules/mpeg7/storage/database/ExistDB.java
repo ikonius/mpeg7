@@ -29,7 +29,7 @@ import org.exist.xquery.modules.mpeg7.storage.helpers.X3DResourceDetail;
  */
 public class ExistDB {
 
-    private static final Logger logger = Logger.getLogger("app.annotation");
+    private static final Logger logger = Logger.getLogger(ExistDB.class);
     protected String driver;
     protected String URI;
     protected Database database;
@@ -58,10 +58,13 @@ public class ExistDB {
      * configuration variables are loaded from the "connection.properties" file
      * in the same package.
      *
-     * @throws Exception
+     * @throws java.lang.InstantiationException
+     * @throws java.lang.IllegalAccessException
+     * @throws org.xmldb.api.base.XMLDBException
+     * @throws java.lang.ClassNotFoundException   
      */
-    public void registerInstance() throws Exception {
-        this.URI = "xmldb:exist://54.186.226.52/exist/xmlrpc";
+    public void registerInstance() throws InstantiationException, IllegalAccessException, XMLDBException, ClassNotFoundException {
+        this.URI = "xmldb:exist://54.72.206.163/exist/xmlrpc";
         this.driver = "org.exist.xmldb.DatabaseImpl";
         Class<?> cl = Class.forName(this.driver);
         this.database = (Database) cl.newInstance();
@@ -76,9 +79,9 @@ public class ExistDB {
      *
      * @return List<CollectionDetail> with each Collection name and location
      * path in directory
-     * @throws Exception
+     * @throws org.xmldb.api.base.XMLDBException    
      */
-    public List<CollectionDetail> listX3DCollections() throws Exception {
+    public List<CollectionDetail> listX3DCollections() throws XMLDBException {
 
         String baseCollection;
         Collection baseCol;
@@ -107,11 +110,10 @@ public class ExistDB {
      * @param childPath
      * @return List<CollectionDetail> with each Collection name and location
      * path in directory
-     * @throws Exception
+     * @throws org.xmldb.api.base.XMLDBException
      */
-    public List<CollectionDetail> listX3DCollections(String childPath) throws Exception {
-
-        // baseCollection can be null when we want to get the base repository -  the url is then defined in 
+    public List<CollectionDetail> listX3DCollections(String childPath) throws XMLDBException {
+     
         String baseCollection;
         Collection baseCol;
         List<CollectionDetail> childCols = new ArrayList<CollectionDetail>();
@@ -138,9 +140,9 @@ public class ExistDB {
      * @param collectionPath
      * @return List<CollectionDetail> with each Collection name and location
      * path in directory
-     * @throws Exception
+     * @throws org.xmldb.api.base.XMLDBException 
      */
-    public List<X3DResourceDetail> getX3DResources(String collectionPath) throws Exception {
+    public List<X3DResourceDetail> getX3DResources(String collectionPath) throws XMLDBException  {
         Collection col = DatabaseManager.getCollection(URI + collectionPath);
         col.setProperty(OutputKeys.INDENT, "yes");
         col.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
@@ -163,7 +165,16 @@ public class ExistDB {
         return childRes;
     }
 
-    public Object retrieveDocument(X3DResourceDetail detail) throws Exception {
+    /**
+     * This method returns the contents of an X3D Resource, based on the
+     * X3DResourceDetail given.
+     *
+     * @param detail
+     * @return Object with X3D Resource contents, which can be loaded as a
+     * Document
+     * @throws org.xmldb.api.base.XMLDBException
+     */
+    public Object retrieveDocument(X3DResourceDetail detail) throws XMLDBException {
         Collection col = DatabaseManager.getCollection(URI + detail.parentPath);
         col.setProperty(OutputKeys.INDENT, "yes");
         col.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
@@ -176,8 +187,17 @@ public class ExistDB {
         return resContent;
 
     }
-    
-    public Object retrieveModule(String moduleName) throws Exception{
+
+    /**
+     * This method retrieves a stored module from the app, based on the
+     * moduleName given. The module must be stored in
+     * /db/apps/annotation/modules/ .
+     *
+     * @param moduleName
+     * @return Object with module contents, which can be loaded as a Document
+     * @throws org.xmldb.api.base.XMLDBException    
+     */
+    public Object retrieveModule(String moduleName) throws XMLDBException {
         String modulePath = "/db/apps/annotation/modules/";
         Collection col = DatabaseManager.getCollection(URI + modulePath);
         col.setProperty(OutputKeys.INDENT, "yes");
@@ -192,21 +212,23 @@ public class ExistDB {
 
     }
 
-    public boolean storeResource(X3DResourceDetail x3dResource, File localFile) {
-        try {
-            Collection col = DatabaseManager.getCollection(URI + x3dResource.parentPath, "admin", "@pds2177");
-            col.setProperty(OutputKeys.INDENT, "yes");
-            col.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
-            col.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
+    /**
+     * Stores an X3DResourceDetail as an XMLResource into the Collection.
+     *
+     * @param x3dResource
+     * @param localFile
+     * @throws XMLDBException
+     */
+    public void storeResource(X3DResourceDetail x3dResource, File localFile) throws XMLDBException {
 
-            XMLResource resource = (XMLResource) col.createResource(localFile.getName(), "XMLResource");
-            resource.setContent(localFile);
-            col.storeResource(resource);
-            return true;
-        } catch (XMLDBException e) {
-            logger.error(e);
-            return false;
-        }
+        Collection col = DatabaseManager.getCollection(URI + x3dResource.parentPath, "admin", "@pds2177");
+        col.setProperty(OutputKeys.INDENT, "yes");
+        col.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
+        col.setProperty(EXistOutputKeys.PROCESS_XSL_PI, "yes");
+
+        XMLResource resource = (XMLResource) col.createResource(localFile.getName(), "XMLResource");
+        resource.setContent(localFile);
+        col.storeResource(resource);
 
     }
 }

@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.exist.xquery.modules.mpeg7.x3d.geometries;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 
 /**
@@ -64,6 +60,6 @@ public abstract class GeometryDetector {
     }
     
     
-    public abstract void processShapes();
-    public abstract String writeParamsToFile(HashMap<String, String[]> dictMap, File file, BufferedWriter writer);
+    public abstract void processShapes() throws IOException, XPathExpressionException;
+    public abstract String writeParamsToFile(HashMap<String, String[]> dictMap, File file, BufferedWriter writer) throws IOException;
 }
