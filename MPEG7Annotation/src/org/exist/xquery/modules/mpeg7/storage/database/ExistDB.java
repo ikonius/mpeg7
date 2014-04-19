@@ -86,7 +86,7 @@ public class ExistDB {
         String baseCollection;
         Collection baseCol;
         List<CollectionDetail> childCols = new ArrayList<CollectionDetail>();
-        baseCollection = "/db/apps/annotation/data/Examples/";
+        baseCollection = "/db/3dData/x3d/";
         baseCol = DatabaseManager.getCollection(URI + baseCollection);
         baseCol.setProperty(OutputKeys.INDENT, "yes");
         baseCol.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
@@ -117,7 +117,7 @@ public class ExistDB {
         String baseCollection;
         Collection baseCol;
         List<CollectionDetail> childCols = new ArrayList<CollectionDetail>();
-        baseCollection = "/db/apps/annotation/data/Examples/";
+        baseCollection = "/db/3dData/x3d/";
         baseCol = DatabaseManager.getCollection(URI + baseCollection + childPath);
         baseCol.setProperty(OutputKeys.INDENT, "yes");
         baseCol.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
