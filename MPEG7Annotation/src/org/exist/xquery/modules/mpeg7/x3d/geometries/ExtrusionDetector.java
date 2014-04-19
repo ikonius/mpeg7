@@ -29,41 +29,52 @@ public class ExtrusionDetector extends GeometryDetector {
 
     @Override
     public void processShapes() throws XPathExpressionException, IOException {
-        String crossSectionAttrib, spineAttrib, scaleAttrib, orientAttrib;
+        String crossSection, spine, scale, orientation;
         ArrayList<String> resultedExtrExtractionList = new ArrayList<String>();
         ArrayList<String> resultedExtrBBoxList = new ArrayList<String>();
         StringBuilder ExtrShapeStringBuilder = new StringBuilder();
         StringBuilder ExtrBBoxStringBuilder = new StringBuilder();
 
         this.getDoc().getDocumentElement().normalize();
-        XPath xPath = XPathFactory.newInstance().newXPath();        
+        XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList extrSet = (NodeList) xPath.evaluate("//Shape/Extrusion", this.getDoc().getDocumentElement(), XPathConstants.NODESET);
 
-        for (int i = 0; i < extrSet.getLength(); i++) {
-            Element elem = (Element) extrSet.item(i);
-            HashMap<String, String[]> dictParams = new HashMap<String, String[]>();
-            scaleAttrib = null;
-            orientAttrib = null;
-
-            crossSectionAttrib = elem.getAttribute("crossSection");
-            spineAttrib = elem.getAttribute("spine");
-            dictParams.put("crossSection", new String[]{crossSectionAttrib});
-            dictParams.put("spine", new String[]{spineAttrib});
-            if (elem.getAttribute("scale") != null) {
-                scaleAttrib = elem.getAttribute("scale");
-                dictParams.put("scale", new String[]{scaleAttrib});
+        for (int p = 0; p < extrSet.getLength(); p++) {
+            Element elem = (Element) extrSet.item(p);
+            boolean isUse = elem.hasAttribute("USE");
+            if (isUse) {
+                String def = elem.getAttribute("USE");
+                elem = (Element) xPath.compile("//Shape/Extrusion[@DEF='" + def + "']").evaluate(this.getDoc().getDocumentElement(), XPathConstants.NODE);
             }
-            if (elem.getAttribute("spine") != null) {
-                orientAttrib = elem.getAttribute("orientation");
-                dictParams.put("orientation", new String[]{orientAttrib});
+            HashMap<String, String[]> dictParams = new HashMap<String, String[]>();
+            scale = null;
+            orientation = null;
+            if (!(elem.hasAttribute("spine"))) {
+                continue;
+            }
+            if (!(elem.hasAttribute("crossSection")) && (elem.hasAttribute("spine"))) {
+                //default Extrusion crossSection='1 1 1 -1 -1 -1 -1 1 1 1' is a square
+                crossSection = "1 1 1 -1 -1 -1 -1 1 1 1";
+            } else {
+                crossSection = elem.getAttribute("crossSection");
+            }
+            spine = elem.getAttribute("spine");
+            dictParams.put("crossSection", new String[]{crossSection});
+            dictParams.put("spine", new String[]{spine});
+            if (elem.hasAttribute("scale")) {
+                scale = elem.getAttribute("scale");
+                dictParams.put("scale", new String[]{scale});
+            }
+            if (elem.hasAttribute("orientation")) {
+                orientation = elem.getAttribute("orientation");
+                dictParams.put("orientation", new String[]{orientation});
             }
             this.setFile(new File("Extrusion.txt"));
 
             String coordTempFile = writeParamsToFile(dictParams, this.getFile(), this.getWriter());
-            //String coordTempFile = writeExtrusionParamsToFile(crossSectionAttrib, spineAttrib, scaleAttrib, orientAttrib, file, bw);
 
             String[] ExtrTempFile = {coordTempFile};
-            String resultedExtraction = ExtrusionDescription.ExtrusionDescription(ExtrTempFile);            
+            String resultedExtraction = ExtrusionDescription.ExtrusionDescription(ExtrTempFile);
 
             String ExtrBBox = resultedExtraction.substring(0, resultedExtraction.indexOf("&") - 1);
             String ExtrShape = resultedExtraction.substring(resultedExtraction.indexOf("&") + 1);
@@ -101,7 +112,8 @@ public class ExtrusionDetector extends GeometryDetector {
             Map.Entry me = (Map.Entry) i.next();
             this.getWriter().write(me.getKey().toString());
             this.getWriter().newLine();
-            this.getWriter().write(me.getValue().toString());
+            String value = dictMap.get(me.getKey())[0];
+            this.getWriter().write(value);
             this.getWriter().newLine();
         }
         this.getWriter().close();

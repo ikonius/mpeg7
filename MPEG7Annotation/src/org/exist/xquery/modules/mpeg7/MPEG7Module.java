@@ -20,7 +20,8 @@ public class MPEG7Module extends AbstractInternalModule {
     public final static String PREFIX = "mpeg7";
 
     private final static FunctionDef[] functions = {
-        new FunctionDef(BatchTransform.signature, BatchTransform.class)
+        new FunctionDef(BatchTransform.signature, BatchTransform.class),
+        new FunctionDef(TransformResource.signature, TransformResource.class)
     };
 
     public MPEG7Module(Map<String, List<? extends Object>> parameters) {
@@ -44,7 +45,7 @@ public class MPEG7Module extends AbstractInternalModule {
 
     @Override
     public String getReleaseVersion() {
-        return "1.0a";
+        return "2.0a";
     }
 
 }

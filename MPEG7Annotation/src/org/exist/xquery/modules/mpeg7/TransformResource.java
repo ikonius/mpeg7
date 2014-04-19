@@ -2,11 +2,11 @@ package org.exist.xquery.modules.mpeg7;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
+import static org.apache.commons.io.FilenameUtils.removeExtension;
 import org.exist.xquery.modules.mpeg7.transformation.MP7Generator;
 import org.apache.log4j.Logger;
 import org.exist.dom.QName;
@@ -35,19 +35,20 @@ import org.xmldb.api.base.XMLDBException;
  *
  * @author Patti Spala <pd.spala@gmail.com>
  */
-public class BatchTransform extends BasicFunction {
+public class TransformResource extends BasicFunction {
 
-    private static final Logger logger = Logger.getLogger(BatchTransform.class);
+    private static final Logger logger = Logger.getLogger(TransformResource.class);
 
     public final static FunctionSignature signature = new FunctionSignature(
-            new QName("batchTransform", MPEG7Module.NAMESPACE_URI, MPEG7Module.PREFIX),
-            "Batch MPEG7 Transformer for .zip extracted Collection stored X3D resources.",
+            new QName("transformResource", MPEG7Module.NAMESPACE_URI, MPEG7Module.PREFIX),
+            "MPEG7 Transformer for a single X3D resource in a Collection",
             new SequenceType[]{
-                new FunctionParameterSequenceType("path", Type.ITEM, Cardinality.EXACTLY_ONE, "The full path URI of the Collection to transform")
+                new FunctionParameterSequenceType("collectionPath", Type.ITEM, Cardinality.EXACTLY_ONE, "The full path URI of the Resource to transform"),
+                new FunctionParameterSequenceType("fileName", Type.ITEM, Cardinality.EXACTLY_ONE, "The X3D Resource file name to transform")
             },
             new FunctionReturnSequenceType(Type.BOOLEAN, Cardinality.EXACTLY_ONE, "true if successful, false otherwise"));
 
-    public BatchTransform(XQueryContext context, FunctionSignature signature) {
+    public TransformResource(XQueryContext context, FunctionSignature signature) {
         super(context, signature);
     }
 
@@ -60,46 +61,30 @@ public class BatchTransform extends BasicFunction {
         }
 
         try {
-            String collectionPath = args[0].getStringValue();
+            String resourcePath = args[0].getStringValue();
+            String fileName = args[1].getStringValue();
+            X3DResourceDetail resource = new X3DResourceDetail(removeExtension(fileName), fileName, resourcePath);
             int mpeg7counter = 0; //debugging
             ExistDB db = new ExistDB();
             db.registerInstance();
             String xslSource = db.retrieveModule("x3d_to_mpeg7_transform.xsl").toString();
-            List<X3DResourceDetail> x3dResources = db.getX3DResources(collectionPath);
-            if (!x3dResources.isEmpty()) {
-                logger.debug("No of X3D files: " + x3dResources.size()); //debugging
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                factory.setNamespaceAware(true);
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                for (X3DResourceDetail detail : x3dResources) {
-                    try {
-                        logger.debug("Processing file: " + detail.resourceFileName);
-                        String x3dSource = db.retrieveDocument(detail).toString();
-                        Document doc = builder.parse(new ByteArrayInputStream(x3dSource.getBytes()));
-                        IFSDetector ifsDetector = new IFSDetector(doc);
-                        ifsDetector.processShapes();
-                        ILSDetector ilsDetector = new ILSDetector(doc);
-                        ilsDetector.processShapes();
-                        ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
-                        extrusionDetector.processShapes();
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
 
-                        MP7Generator mp7Generator = new MP7Generator(detail, extrusionDetector.getParamMap(), xslSource);
-                        mpeg7counter = mp7Generator.generateDescription(mpeg7counter);
+            logger.debug("Processing file: " + resource.resourceFileName); //debugging
+            String x3dSource = db.retrieveDocument(resource).toString();
+            Document doc = builder.parse(new ByteArrayInputStream(x3dSource.getBytes()));
+            IFSDetector ifsDetector = new IFSDetector(doc);
+            ifsDetector.processShapes();
+            ILSDetector ilsDetector = new ILSDetector(doc);
+            ilsDetector.processShapes();
+            ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
+            extrusionDetector.processShapes();
 
-                    } catch (XMLDBException ex) {
-                        logger.error("XMLDBException: ", ex);
-                    } catch (SAXException ex) {
-                        logger.error("SAXException: ", ex);
-                    } catch (IOException ex) {
-                        logger.error("IOException: ", ex);
-                    } catch (XPathExpressionException ex) {
-                        logger.error("XPathExpressionException: ", ex);
-                    } catch (Exception ex) {
-                        logger.error("Exception: ", ex);
-                    }
+            MP7Generator mp7Generator = new MP7Generator(resource, extrusionDetector.getParamMap(), xslSource);
+            mpeg7counter = mp7Generator.generateDescription(mpeg7counter);
 
-                }
-            }
             logger.debug("No of MPEG-7 files: " + mpeg7counter); //debugging
             result.add(new BooleanValue(true)); //todo cases
 
@@ -117,6 +102,18 @@ public class BatchTransform extends BasicFunction {
             result.add(new BooleanValue(false));
         } catch (ClassNotFoundException ex) {
             logger.error("ClassNotFoundException: ", ex);
+            result.add(new BooleanValue(false));
+        } catch (SAXException ex) {
+            logger.error("SAXException: ", ex);
+            result.add(new BooleanValue(false));
+        } catch (IOException ex) {
+            logger.error("IOException: ", ex);
+            result.add(new BooleanValue(false));
+        } catch (XPathExpressionException ex) {
+            logger.error("XPathExpressionException: ", ex);
+            result.add(new BooleanValue(false));
+        } catch (Exception ex) {
+            logger.error("Exception: ", ex);
             result.add(new BooleanValue(false));
         }
         return result;

@@ -3,7 +3,8 @@
                xmlns:mpeg7="urn:mpeg:mpeg7:schema:2001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:mpeg7:schema:2001 Mpeg7-2001.xsd">
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
 	<xsl:param name="filename"></xsl:param>
-	<xsl:param name="pointsExtraction"></xsl:param>
+	<xsl:param name="IFSPointsExtraction"></xsl:param>
+        <xsl:param name="ILSPointsExtraction"></xsl:param>
         <xsl:param name="extrusionPointsExtraction"></xsl:param>
         <xsl:param name="extrusionBBoxParams"></xsl:param>
 	<xsl:template match="/">
@@ -1121,7 +1122,15 @@
                     MPOREI KAI DIAKRINEI SOSTA TA USE ATTRIBUTES OPOS KAI AN EINAI.-->
                     <xsl:variable name="positionOfIFS" select="count(preceding::IndexedFaceSet) + 1"/>
                     <xsl:call-template name="shapeExtraction">
-                        <xsl:with-param name="stringOfIFS" select="tokenize($pointsExtraction, '#')[$positionOfIFS]"/>
+                        <xsl:with-param name="stringOfIFS" select="tokenize($IFSPointsExtraction, '#')[$positionOfIFS]"/>
+                    </xsl:call-template>
+                </xsl:if>
+                
+                  <xsl:if test="$GeometryType = 'IndexedLineSet'">
+                      <!--TO IDIO GIA IndexedLineSet.-->
+                    <xsl:variable name="positionOfIFS" select="count(preceding::IndexedLineSet) + 1"/>
+                    <xsl:call-template name="shapeExtraction">
+                        <xsl:with-param name="stringOfIFS" select="tokenize($ILSPointsExtraction, '#')[$positionOfIFS]"/>
                     </xsl:call-template>
                 </xsl:if>
                 

@@ -24,11 +24,11 @@ import org.w3c.dom.NodeList;
  *
  * @author Patti Spala <pd.spala@gmail.com>
  */
-public class IFSDetector extends GeometryDetector {
+public class ILSDetector extends GeometryDetector {
 
-    private static final Logger logger = Logger.getLogger(IFSDetector.class);
+    private static final Logger logger = Logger.getLogger(ILSDetector.class);
 
-    public IFSDetector(Document doc) {
+    public ILSDetector(Document doc) {
         super(doc);
     }
 
@@ -41,7 +41,7 @@ public class IFSDetector extends GeometryDetector {
         StringBuilder IFSStringBuilder = new StringBuilder();
         XPath xPath = XPathFactory.newInstance().newXPath();
         this.getDoc().getDocumentElement().normalize();
-        NodeList ifsSet = (NodeList) xPath.evaluate("//Shape/IndexedFaceSet", this.getDoc().getDocumentElement(), XPathConstants.NODESET);
+        NodeList ifsSet = (NodeList) xPath.evaluate("//Shape/IndexedLineSet", this.getDoc().getDocumentElement(), XPathConstants.NODESET);
         for (int p = 0; p < ifsSet.getLength(); p++) {
 
             HashMap<String, String[]> coordDictParams = new HashMap<String, String[]>();
@@ -52,7 +52,7 @@ public class IFSDetector extends GeometryDetector {
             boolean isUseIFS = elem.hasAttribute("USE");
             if (isUseIFS) {
                 String def = elem.getAttribute("USE");
-                elem = (Element) xPath.compile("//Shape/IndexedFaceSet[@DEF='" + def + "']").evaluate(this.getDoc().getDocumentElement(), XPathConstants.NODE);
+                elem = (Element) xPath.compile("//Shape/IndexedLineSet[@DEF='" + def + "']").evaluate(this.getDoc().getDocumentElement(), XPathConstants.NODE);
             }
             String coordIndex = null;
             if (elem.hasAttribute("coordIndex")) {
@@ -72,10 +72,10 @@ public class IFSDetector extends GeometryDetector {
                 //      <Coordinate USE='WallCoordinates'/>
                 // </IndexedFaceSet>
                 if (coordIndex == null) {
-                    elem = (Element) xPath.compile("//Shape/IndexedFaceSet[Coordinate[@DEF='" + defCoord + "']]").evaluate(this.getDoc().getDocumentElement(), XPathConstants.NODE);
+                    elem = (Element) xPath.compile("//Shape/IndexedLineSet[Coordinate[@DEF='" + defCoord + "']]").evaluate(this.getDoc().getDocumentElement(), XPathConstants.NODE);
                     coordIndex = elem.getAttribute("coordIndex");
                 } else {
-                    coordinate = (Element) xPath.compile("//IndexedFaceSet/Coordinate[@DEF='" + defCoord + "']").evaluate(this.getDoc().getDocumentElement(), XPathConstants.NODE);
+                    coordinate = (Element) xPath.compile("//IndexedLineSet/Coordinate[@DEF='" + defCoord + "']").evaluate(this.getDoc().getDocumentElement(), XPathConstants.NODE);
                 }
             }
 
@@ -113,7 +113,7 @@ public class IFSDetector extends GeometryDetector {
             IFSStringBuilder.append(resultedIFSExtractionList.get(i));
             IFSStringBuilder.append("#");
         }
-        this.getParamMap().put("IFSPointsExtraction", IFSStringBuilder.toString());
+        this.getParamMap().put("ILSPointsExtraction", IFSStringBuilder.toString());
     }
 
     @Override

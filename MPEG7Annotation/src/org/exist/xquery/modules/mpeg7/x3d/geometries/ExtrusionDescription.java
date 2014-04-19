@@ -21,8 +21,7 @@ import org.apache.log4j.Logger;
  * @author Markos
  */
 public class ExtrusionDescription {
-    private static final Logger logger = Logger.getLogger(ExtrusionDescription.class);
-    
+
     public static String ExtrusionDescription(String[] args) throws FileNotFoundException, IOException {
 //************ Data Input from hard disk *****************
         BufferedReader ExtrusionFile;
@@ -167,9 +166,8 @@ public class ExtrusionDescription {
         double Yangle[] = new double[Spine.length];
         double Zangle[] = new double[Spine.length];
 
-        System.out.println(Spine.length);
-        System.out.println(CrossSection.length);
-
+        //System.out.println(Spine.length);
+        // System.out.println(CrossSection.length);
         //  System.out.println(CrossSection[CrossSection.length - 1][0] + " " + CrossSection[CrossSection.length - 1][1] + " ");
         //  System.out.println(CrossSection[0][0] + " " + CrossSection[0][1] + " ");
         if ((CrossSection[CrossSection.length - 1][0] == CrossSection[0][0]) && (CrossSection[CrossSection.length - 1][1] == CrossSection[0][1])) {
@@ -179,7 +177,7 @@ public class ExtrusionDescription {
 
         if ((Spine[Spine.length - 1][0] == Spine[0][0]) && (Spine[Spine.length - 1][1] == Spine[0][1]) && (Spine[Spine.length - 1][2] == Spine[0][2])) {
             SpineCloses = true;
-            System.out.println("Spine Closes");
+            //System.out.println("Spine Closes");
         }
 
         for (int i = 0; i < Spine.length; i++) {
@@ -445,12 +443,12 @@ public class ExtrusionDescription {
             CSClosingFaces = 0;
         }
 
-        int IFSNumberOfFaces = (NumberOfCSPoints - 1 + CSClosingFaces) * 2 * (NumberOfSpinePoints - 1 + SpineClosingSegment) + NumberOfLids * (NumberOfCSPoints-1 + CSClosingFaces);
+        int IFSNumberOfFaces = (NumberOfCSPoints - 1 + CSClosingFaces) * 2 * (NumberOfSpinePoints - 1 + SpineClosingSegment) + NumberOfLids * (NumberOfCSPoints - 1 + CSClosingFaces);
         int IFSNumberOfPoints = NumberOfCSPoints * NumberOfSpinePoints + NumberOfLids;
-        System.out.println("Number of Spine Vertebrae: " + NumberOfSpinePoints);
-        System.out.println("Number of CS Points: " + NumberOfCSPoints);
-        System.out.println("Number of Points in FaceSet: " + IFSNumberOfPoints);
-        System.out.println("Number of Faces in FaceSet: " + IFSNumberOfFaces);
+        //System.out.println("Number of Spine Vertebrae: " + NumberOfSpinePoints);
+        //System.out.println("Number of CS Points: " + NumberOfCSPoints);
+        // System.out.println("Number of Points in FaceSet: " + IFSNumberOfPoints);
+        //System.out.println("Number of Faces in FaceSet: " + IFSNumberOfFaces);
         float Points[][] = new float[IFSNumberOfPoints][3]; //The +2 here and + 2 * CrossSection.length below assume both lids are closed and the spine doesn't loop unto itself
         int Indexes[][] = new int[IFSNumberOfFaces][3];
 
@@ -488,7 +486,7 @@ public class ExtrusionDescription {
 
         if (SpineCloses) {
             for (int j = 0; j < NumberOfCSPoints - 1; j++) {
-                System.out.println(((NumberOfSpinePoints - 1) * (NumberOfCSPoints - 1 + CSClosingFaces) * (2) + j * 2));
+                //System.out.println(((NumberOfSpinePoints - 1) * (NumberOfCSPoints - 1 + CSClosingFaces) * (2) + j * 2));
                 Indexes[(NumberOfSpinePoints - 1) * (NumberOfCSPoints - 1 + CSClosingFaces) * (2) + j * 2][0] = (NumberOfSpinePoints - 1) * (NumberOfCSPoints) + j;
                 Indexes[(NumberOfSpinePoints - 1) * (NumberOfCSPoints - 1 + CSClosingFaces) * (2) + j * 2][1] = (NumberOfSpinePoints - 1) * (NumberOfCSPoints) + j + 1;
                 Indexes[(NumberOfSpinePoints - 1) * (NumberOfCSPoints - 1 + CSClosingFaces) * (2) + j * 2][2] = j;
@@ -534,26 +532,26 @@ public class ExtrusionDescription {
             if (CrossSectionCloses) {
                 NumOfSideFaces += (NumberOfSpinePoints - 1) * 2;
             }
-            System.out.println(NumOfSideFaces);
-            System.out.println(Indexes.length);
-            System.out.println(NumberOfCSPoints);
+           // System.out.println(NumOfSideFaces);
+            // System.out.println(Indexes.length);
+            // System.out.println(NumberOfCSPoints);
             for (int i = 0; i < NumberOfCSPoints - 1; i++) {
                 //System.out.println(Indexes[NumOfSideFaces + i][0] + " " + Indexes[NumOfSideFaces + i][1] + " " + Indexes[NumOfSideFaces + i][2]);
-                Indexes[NumOfSideFaces + i ][0] = i + 1;
-                Indexes[NumOfSideFaces + i ][1] = i;
-                Indexes[NumOfSideFaces + i ][2] = Points.length - 2;
+                Indexes[NumOfSideFaces + i][0] = i + 1;
+                Indexes[NumOfSideFaces + i][1] = i;
+                Indexes[NumOfSideFaces + i][2] = Points.length - 2;
                 Indexes[NumOfSideFaces + NumberOfCSPoints - 1 + i][0] = Points.length - 3 - i - 1;
                 Indexes[NumOfSideFaces + NumberOfCSPoints - 1 + i][1] = Points.length - 3 - i;
                 Indexes[NumOfSideFaces + NumberOfCSPoints - 1 + i][2] = Points.length - 1;
             }
-            if (CrossSectionCloses){
-                Indexes[Indexes.length-2][0]=0;
-                Indexes[Indexes.length-2][1]=NumberOfCSPoints-1;
-                Indexes[Indexes.length-2][2]=Points.length - 2;
-                
-                Indexes[Indexes.length-1][0]=Points.length - 3;
-                Indexes[Indexes.length-1][1]=Points.length - NumberOfCSPoints-2;
-                Indexes[Indexes.length-1][2]=Points.length - 1;
+            if (CrossSectionCloses) {
+                Indexes[Indexes.length - 2][0] = 0;
+                Indexes[Indexes.length - 2][1] = NumberOfCSPoints - 1;
+                Indexes[Indexes.length - 2][2] = Points.length - 2;
+
+                Indexes[Indexes.length - 1][0] = Points.length - 3;
+                Indexes[Indexes.length - 1][1] = Points.length - NumberOfCSPoints - 2;
+                Indexes[Indexes.length - 1][2] = Points.length - 1;
             }
         }
         float MaxXYZ[] = new float[3];
@@ -601,22 +599,21 @@ public class ExtrusionDescription {
         for (int[] Indexe : Indexes) {
             IndexWriter.write(Indexe[0] + " " + Indexe[1] + " " + Indexe[2] + " -1 ");
         }
-        System.out.println();
-        System.out.println("<X3D> \n <Scene> \n "
-                //                + "<Transform translation=\"0 2 10\" center=\"0 0 -10\" rotation=\"0 1 0 1.57\">\n"
-                //               + "<Viewpoint position=\"0 0 0\"/>\n </Transform> \n"
-                + "<Shape> \n <IndexedFaceSet solid=\"true\" coordIndex=\"" + IndexWriter.toString() + "\" > \n <Coordinate point=\"" + PointWriter.toString() + "\"/> \n </IndexedFaceSet> \n <Appearance><Material/></Appearance> \n </Shape> \n </Scene> \n </X3D>");
+        //System.out.println();
+        // System.out.println("<X3D> \n <Scene> \n "
+        //                + "<Transform translation=\"0 2 10\" center=\"0 0 -10\" rotation=\"0 1 0 1.57\">\n"
+        //               + "<Viewpoint position=\"0 0 0\"/>\n </Transform> \n"
+        // + "<Shape> \n <IndexedFaceSet solid=\"true\" coordIndex=\"" + IndexWriter.toString() + "\" > \n <Coordinate point=\"" + PointWriter.toString() + "\"/> \n </IndexedFaceSet> \n <Appearance><Material/></Appearance> \n </Shape> \n </Scene> \n </X3D>");
 
         String ShapeIndex = ShapeIndexExtraction.PerformActualComputation(Points, Indexes);
         String FinalOutput = String.valueOf(BBoxSize[0]) + " " + String.valueOf(BBoxSize[1]) + " " + String.valueOf(BBoxSize[2]) + " " + String.valueOf(BBoxCenter[0]) + " " + String.valueOf(BBoxCenter[1]) + " " + String.valueOf(BBoxCenter[2]) + "&" + ShapeIndex;
 
-        System.out.println(ShapeIndex);
-
+        //System.out.println(ShapeIndex);
         String[] argsb = new String[2];
         argsb[0] = "Faces.txt";
         argsb[1] = "Points.txt";
         //String ShapeIndexb = ShapeIndexExtraction.shapeIndexEctraction(argsb);
-        System.out.print(Indexes.length);
+        //System.out.print(Indexes.length);
         //System.out.println(ShapeIndexb);
         return FinalOutput;
     }

@@ -61,7 +61,7 @@ public class ExistDB {
      * @throws java.lang.InstantiationException
      * @throws java.lang.IllegalAccessException
      * @throws org.xmldb.api.base.XMLDBException
-     * @throws java.lang.ClassNotFoundException   
+     * @throws java.lang.ClassNotFoundException
      */
     public void registerInstance() throws InstantiationException, IllegalAccessException, XMLDBException, ClassNotFoundException {
         this.URI = "xmldb:exist://54.72.206.163/exist/xmlrpc";
@@ -79,7 +79,7 @@ public class ExistDB {
      *
      * @return List<CollectionDetail> with each Collection name and location
      * path in directory
-     * @throws org.xmldb.api.base.XMLDBException    
+     * @throws org.xmldb.api.base.XMLDBException
      */
     public List<CollectionDetail> listX3DCollections() throws XMLDBException {
 
@@ -113,7 +113,7 @@ public class ExistDB {
      * @throws org.xmldb.api.base.XMLDBException
      */
     public List<CollectionDetail> listX3DCollections(String childPath) throws XMLDBException {
-     
+
         String baseCollection;
         Collection baseCol;
         List<CollectionDetail> childCols = new ArrayList<CollectionDetail>();
@@ -140,9 +140,9 @@ public class ExistDB {
      * @param collectionPath
      * @return List<CollectionDetail> with each Collection name and location
      * path in directory
-     * @throws org.xmldb.api.base.XMLDBException 
+     * @throws org.xmldb.api.base.XMLDBException
      */
-    public List<X3DResourceDetail> getX3DResources(String collectionPath) throws XMLDBException  {
+    public List<X3DResourceDetail> getX3DResources(String collectionPath) throws XMLDBException {
         Collection col = DatabaseManager.getCollection(URI + collectionPath);
         col.setProperty(OutputKeys.INDENT, "yes");
         col.setProperty(EXistOutputKeys.EXPAND_XINCLUDES, "no");
@@ -164,6 +164,7 @@ public class ExistDB {
         col.close();
         return childRes;
     }
+
 
     /**
      * This method returns the contents of an X3D Resource, based on the
@@ -195,7 +196,7 @@ public class ExistDB {
      *
      * @param moduleName
      * @return Object with module contents, which can be loaded as a Document
-     * @throws org.xmldb.api.base.XMLDBException    
+     * @throws org.xmldb.api.base.XMLDBException
      */
     public Object retrieveModule(String moduleName) throws XMLDBException {
         String modulePath = "/db/apps/annotation/modules/";
