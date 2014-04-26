@@ -165,7 +165,6 @@ public class ExistDB {
         return childRes;
     }
 
-
     /**
      * This method returns the contents of an X3D Resource, based on the
      * X3DResourceDetail given.
@@ -230,6 +229,8 @@ public class ExistDB {
         XMLResource resource = (XMLResource) col.createResource(localFile.getName(), "XMLResource");
         resource.setContent(localFile);
         col.storeResource(resource);
-
+        if (col.isOpen()) {
+            col.close();
+        }
     }
 }

@@ -79,9 +79,10 @@ public class IFSDetector extends GeometryDetector {
                 }
             }
 
-            String points = coordinate.getAttribute("point");
-
+            String points = coordinate.getAttribute("point").replaceAll("\\r|\\n", " ").trim().replaceAll(" +", " ").replaceAll(",", "");
+            coordIndex = coordIndex.replaceAll("\\r|\\n", " ").trim().replaceAll(" +", " ").replaceAll(",", "");         
             Scanner sc = new Scanner(coordIndex).useDelimiter(" ");
+
             int maxCoordIndex = 0;
             while (sc.hasNextInt()) {
                 int thisVal = sc.nextInt();
@@ -142,17 +143,19 @@ public class IFSDetector extends GeometryDetector {
     private List getPointParts(String points, int indexSize) {
         List pointParts = new ArrayList();
         Scanner scannedPoints = new Scanner(points).useDelimiter(" ");
+
         int totalPointIndex = 3 * (indexSize + 1);
         int index = 0;
-        float[] floats = new float[totalPointIndex];
+        double[] floats = new double[totalPointIndex];
 
-        while ((scannedPoints.hasNextFloat()) && (index < floats.length)) {
-            float fl = scannedPoints.nextFloat();
+        while ((scannedPoints.hasNextDouble()) && (index < floats.length)) {
+            double fl = scannedPoints.nextDouble();
             floats[index] = fl;
             index++;
         }
         for (int i = 0; i < floats.length; i += 3) {
-            String nextPart = Float.toString(floats[i]) + " " + Float.toString(floats[i + 1]) + " " + Float.toString(floats[i + 2]);
+            String nextPart = String.valueOf(floats[i]) + " " + String.valueOf(floats[i + 1]) + " " + String.valueOf(floats[i + 2]);
+            logger.info(nextPart);
             pointParts.add(nextPart);
         }
         return pointParts;

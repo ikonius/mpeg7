@@ -21,7 +21,7 @@ public class MPEG7Module extends AbstractInternalModule {
 
     private final static FunctionDef[] functions = {
         new FunctionDef(BatchTransform.signature, BatchTransform.class),
-        new FunctionDef(TransformResource.signature, TransformResource.class)
+        new FunctionDef(SingleTransform.signature, SingleTransform.class)
     };
 
     public MPEG7Module(Map<String, List<? extends Object>> parameters) {

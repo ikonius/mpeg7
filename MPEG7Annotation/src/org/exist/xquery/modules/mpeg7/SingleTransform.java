@@ -2,9 +2,15 @@ package org.exist.xquery.modules.mpeg7;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import org.exist.xquery.modules.mpeg7.transformation.MP7Generator;
@@ -28,6 +34,7 @@ import org.exist.xquery.modules.mpeg7.storage.helpers.X3DResourceDetail;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.ExtrusionDetector;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.IFSDetector;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.ILSDetector;
+import org.exist.xquery.modules.mpeg7.x3d.geometries.InlineDetector;
 import org.xml.sax.SAXException;
 import org.xmldb.api.base.XMLDBException;
 
@@ -35,12 +42,12 @@ import org.xmldb.api.base.XMLDBException;
  *
  * @author Patti Spala <pd.spala@gmail.com>
  */
-public class TransformResource extends BasicFunction {
+public class SingleTransform extends BasicFunction {
 
-    private static final Logger logger = Logger.getLogger(TransformResource.class);
+    private static final Logger logger = Logger.getLogger(SingleTransform.class);
 
     public final static FunctionSignature signature = new FunctionSignature(
-            new QName("transformResource", MPEG7Module.NAMESPACE_URI, MPEG7Module.PREFIX),
+            new QName("singleTransform", MPEG7Module.NAMESPACE_URI, MPEG7Module.PREFIX),
             "MPEG7 Transformer for a single X3D resource in a Collection",
             new SequenceType[]{
                 new FunctionParameterSequenceType("collectionPath", Type.ITEM, Cardinality.EXACTLY_ONE, "The full path URI of the Resource to transform"),
@@ -48,7 +55,7 @@ public class TransformResource extends BasicFunction {
             },
             new FunctionReturnSequenceType(Type.BOOLEAN, Cardinality.EXACTLY_ONE, "true if successful, false otherwise"));
 
-    public TransformResource(XQueryContext context, FunctionSignature signature) {
+    public SingleTransform(XQueryContext context, FunctionSignature signature) {
         super(context, signature);
     }
 
@@ -60,7 +67,7 @@ public class TransformResource extends BasicFunction {
             return Sequence.EMPTY_SEQUENCE;
         }
 
-        try {
+        try {           
             String resourcePath = args[0].getStringValue();
             String fileName = args[1].getStringValue();
             X3DResourceDetail resource = new X3DResourceDetail(removeExtension(fileName), fileName, resourcePath);
@@ -75,6 +82,20 @@ public class TransformResource extends BasicFunction {
             logger.debug("Processing file: " + resource.resourceFileName); //debugging
             String x3dSource = db.retrieveDocument(resource).toString();
             Document doc = builder.parse(new ByteArrayInputStream(x3dSource.getBytes()));
+            InlineDetector inlDetector = new InlineDetector(doc, resource.parentPath);
+            doc = inlDetector.retrieveInlineNodes();
+
+            //debugging
+            StringWriter sw = new StringWriter();
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.transform(new DOMSource(doc), new StreamResult(sw));
+            logger.info(sw.toString());
+            //end debugging
             IFSDetector ifsDetector = new IFSDetector(doc);
             ifsDetector.processShapes();
             ILSDetector ilsDetector = new ILSDetector(doc);

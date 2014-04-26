@@ -1,4 +1,4 @@
-package org.exist.xquery.modules.mpeg7.storage;
+package testing;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
