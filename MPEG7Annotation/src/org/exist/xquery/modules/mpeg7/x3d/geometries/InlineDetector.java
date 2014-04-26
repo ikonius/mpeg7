@@ -82,8 +82,13 @@ public class InlineDetector {
                         X3DResourceDetail resource = new X3DResourceDetail(removeExtension(urlParam), urlParam, basePath);
                         ExistDB db = new ExistDB();
                         db.registerInstance();
-                        String x3dSource = db.retrieveDocument(resource).toString();
-                        inlineDoc = builder.parse(new ByteArrayInputStream(x3dSource.getBytes()));
+                        try {
+                            String x3dSource = db.retrieveDocument(resource).toString();
+                            inlineDoc = builder.parse(new ByteArrayInputStream(x3dSource.getBytes()));
+                        } catch (NullPointerException e) {
+                            //file not found (maybe old path or not uploaded)
+                            continue;
+                        }                        
                         break;
                     } else {
                         URL url = new URL(urlParam);
