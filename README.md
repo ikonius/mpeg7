@@ -26,7 +26,7 @@ to build the extensions directory. Edit the file extensions/build.properties and
 
 ### Import the module
 
-    import module namespace mpeg7 = "ttp://exist-db.org/xquery/mpeg7";
+    import module namespace mpeg7 = "http://exist-db.org/xquery/mpeg7";
     
 ### Function usage
 
