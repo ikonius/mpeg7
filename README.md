@@ -46,4 +46,4 @@ This resource is already stored in the given $path parameter, where $path is the
 	
 ## Development
 
-This extension is currently under continuous development in alpha version 2.0a (unstable).
+This extension is currently under continuous development in beta version 2.0b (stable).
