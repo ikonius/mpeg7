@@ -153,7 +153,6 @@ public class ILSDetector extends GeometryDetector {
         }
         for (int i = 0; i < floats.length; i += 3) {
             String nextPart = String.valueOf(floats[i]) + " " + String.valueOf(floats[i + 1]) + " " + String.valueOf(floats[i + 2]);
-            logger.info(nextPart);
             pointParts.add(nextPart);
         }
         return pointParts;

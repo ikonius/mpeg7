@@ -32,7 +32,7 @@ public class InlineDetector {
 
     private Document doc;
     String basePath;
-    private static final Logger logger = Logger.getLogger(ILSDetector.class);
+    //private static final Logger logger = Logger.getLogger(InlineDetector.class);
 
     public InlineDetector(Document doc, String basePath) {
         this.doc = doc;
@@ -75,7 +75,6 @@ public class InlineDetector {
                     UrlValidator urlValidator = new UrlValidator();
                     if (!urlValidator.isValid(urlParam)) {
                         urlParam = X3DResourceDetail.resolveExistUri(basePath, urlParam);
-                        logger.info(urlParam);
                         X3DResourceDetail resource = new X3DResourceDetail(removeExtension(urlParam), urlParam, basePath);
                         ExistDB db = new ExistDB();
                         db.registerInstance();
@@ -85,7 +84,7 @@ public class InlineDetector {
                         } catch (NullPointerException e) {
                             //file not found (maybe old path or not uploaded)
                             continue;
-                        }                        
+                        }
                         break;
                     } else {
                         URL url = new URL(urlParam);
@@ -101,8 +100,6 @@ public class InlineDetector {
                 Element parentElement = (Element) inlineNode.getParentNode();
                 Node importedNode = this.doc.importNode(inlineScene, true);
                 parentElement.replaceChild(importedNode, inlineNode);
-                //parentElement.insertBefore(importedNode, inlineNode);
-                //parentElement.removeChild(inlineNode);
                 parentElement.normalize();
                 this.setDoc(doc);
             }
