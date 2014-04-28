@@ -3,7 +3,7 @@
 An XQuery module for extracting MPEG-7 annotation descriptions from .x3d files stored in the eXist-db database.
 This module currently exposes one function for performing this task (validation against the extended MPEG-7 XSD Schema automatically included). 
 
-You may find a demo of a working web app <a href="http://exist.webcatts.com" target="_blank">here</a>
+You can find a demo of a working web app <a href="http://exist.webcatts.com" target="_blank">here</a>
 
 ## Installation
 
@@ -26,24 +26,24 @@ to build the extensions directory. Edit the file extensions/build.properties and
 
 ### Import the module
 
-    import module namespace unzip = "ttp://exist-db.org/xquery/mpeg7";
+    import module namespace mpeg7 = "http://exist-db.org/xquery/mpeg7";
     
 ### Function usage
 
-* **mpeg7:batch-transform($path as item()) as xs:boolean**
+* **mpeg7:batchTransform($path as item()) as xs:boolean**
 
 This function extracts the MPEG-7 descriptions of all .x3d files stored in the given $path parameter, where $path is the relative path of the collection in the database.
 
-    mpeg7:batch-transform('/db/apps/data/x3d')
+    mpeg7:batchTransform('/db/apps/data/x3d')
 
-* **mpeg7:transformResource($collectionPath as item(), $fileName as item()) as xs:boolean**
+* **mpeg7:singleTransform($collectionPath as item(), $fileName as item()) as xs:boolean**
 
 This function extracts the MPEG-7 description of a single .x3d file defined as $filename. 
 This resource is already stored in the given $path parameter, where $path is the relative path of the collection in the database.
 
-    mpeg7:transformResource('/db/apps/data/x3d','Geometry2D.x3d')
+    mpeg7:singleTransform('/db/apps/data/x3d','Geometry2D.x3d')
 
 	
 ## Development
 
-This extension is currently under continuous development in alpha version 2.0a (unstable).
+This extension is currently under continuous development in beta version 2.0b (stable).
