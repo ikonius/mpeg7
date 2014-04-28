@@ -71,7 +71,6 @@ public class SingleTransform extends BasicFunction {
             String resourcePath = args[0].getStringValue();
             String fileName = args[1].getStringValue();
             X3DResourceDetail resource = new X3DResourceDetail(removeExtension(fileName), fileName, resourcePath);
-            int mpeg7counter = 0; //debugging
             ExistDB db = new ExistDB();
             db.registerInstance();
             String xslSource = db.retrieveModule("x3d_to_mpeg7_transform.xsl").toString();
@@ -79,13 +78,13 @@ public class SingleTransform extends BasicFunction {
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
 
-            logger.debug("Processing file: " + resource.resourceFileName); //debugging
+            //logger.debug("Processing file: " + resource.resourceFileName); //debugging
             String x3dSource = db.retrieveDocument(resource).toString();
             Document doc = builder.parse(new ByteArrayInputStream(x3dSource.getBytes()));
             InlineDetector inlDetector = new InlineDetector(doc, resource.parentPath);
             doc = inlDetector.retrieveInlineNodes();
 
-            //debugging
+            /*debugging
             StringWriter sw = new StringWriter();
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
@@ -95,7 +94,9 @@ public class SingleTransform extends BasicFunction {
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.transform(new DOMSource(doc), new StreamResult(sw));
             logger.info(sw.toString());
-            //end debugging
+                    
+            end debugging*/
+            
             IFSDetector ifsDetector = new IFSDetector(doc);
             ifsDetector.processShapes();
             ILSDetector ilsDetector = new ILSDetector(doc);
@@ -104,10 +105,10 @@ public class SingleTransform extends BasicFunction {
             extrusionDetector.processShapes();
 
             MP7Generator mp7Generator = new MP7Generator(resource, extrusionDetector.getParamMap(), xslSource);
-            mpeg7counter = mp7Generator.generateDescription(mpeg7counter);
+            mp7Generator.generateDescription();
 
-            logger.debug("No of MPEG-7 files: " + mpeg7counter); //debugging
-            result.add(new BooleanValue(true)); //todo cases
+            //logger.debug("No of MPEG-7 files: " + mpeg7counter); //debugging
+            result.add(new BooleanValue(true)); 
 
         } catch (InstantiationException ex) {
             logger.error("InstantiationException: ", ex);

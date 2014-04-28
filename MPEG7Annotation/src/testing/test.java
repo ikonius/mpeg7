@@ -5,15 +5,10 @@
  */
 package testing;
 
-import com.sun.org.apache.xml.internal.utils.SystemIDResolver;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 import javax.xml.transform.TransformerException;
 import org.apache.commons.lang3.StringUtils;

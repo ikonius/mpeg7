@@ -89,7 +89,7 @@ public class MP7Generator {
         this.xslStream = xslStream;
     }
 
-    public int generateDescription(int count) {
+    public void generateDescription() {
         try {
             //Get X3D source
             ExistDB db = new ExistDB();
@@ -110,10 +110,8 @@ public class MP7Generator {
             Validator mpeg7Validator = new Validator(mp7File);
             Boolean isValid = mpeg7Validator.isValid();
             // if (isValid) {
-            db.storeResource(x3dResource, mp7File);
-            count ++;
-            //}
-            return count;
+            db.storeResource(x3dResource, mp7File);            
+            //}            
         } catch (XMLDBException ex) {
             logger.error("XMLDBException: ", ex);
         } catch (TransformerException ex) {
@@ -126,8 +124,7 @@ public class MP7Generator {
             logger.error("IllegalArgumentException: ", ex);
         } catch (InstantiationException ex) {
             logger.error("InstantiationException: ", ex);
-        }
-        return count;
+        }        
     }
 
     private void setTranformerParameters() {

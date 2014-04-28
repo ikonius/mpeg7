@@ -28,6 +28,7 @@ import org.exist.xquery.modules.mpeg7.storage.helpers.X3DResourceDetail;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.ExtrusionDetector;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.IFSDetector;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.ILSDetector;
+import org.exist.xquery.modules.mpeg7.x3d.geometries.InlineDetector;
 import org.xml.sax.SAXException;
 import org.xmldb.api.base.XMLDBException;
 
@@ -61,21 +62,23 @@ public class BatchTransform extends BasicFunction {
 
         try {
             String collectionPath = args[0].getStringValue();
-            int mpeg7counter = 0; //debugging
+            //int mpeg7counter = 0; //debugging
             ExistDB db = new ExistDB();
             db.registerInstance();
             String xslSource = db.retrieveModule("x3d_to_mpeg7_transform.xsl").toString();
             List<X3DResourceDetail> x3dResources = db.getX3DResources(collectionPath);
             if (!x3dResources.isEmpty()) {
-                logger.debug("No of X3D files: " + x3dResources.size()); //debugging
+                //logger.debug("No of X3D files: " + x3dResources.size()); //debugging
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 factory.setNamespaceAware(true);
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 for (X3DResourceDetail detail : x3dResources) {
                     try {
-                        logger.debug("Processing file: " + detail.resourceFileName);
+                        //logger.debug("Processing file: " + detail.resourceFileName);
                         String x3dSource = db.retrieveDocument(detail).toString();
                         Document doc = builder.parse(new ByteArrayInputStream(x3dSource.getBytes()));
+                        InlineDetector inlDetector = new InlineDetector(doc, detail.parentPath);
+                        doc = inlDetector.retrieveInlineNodes();
                         IFSDetector ifsDetector = new IFSDetector(doc);
                         ifsDetector.processShapes();
                         ILSDetector ilsDetector = new ILSDetector(doc);
@@ -84,7 +87,7 @@ public class BatchTransform extends BasicFunction {
                         extrusionDetector.processShapes();
 
                         MP7Generator mp7Generator = new MP7Generator(detail, extrusionDetector.getParamMap(), xslSource);
-                        mpeg7counter = mp7Generator.generateDescription(mpeg7counter);
+                        mp7Generator.generateDescription();
 
                     } catch (XMLDBException ex) {
                         logger.error("XMLDBException: ", ex);
@@ -100,7 +103,7 @@ public class BatchTransform extends BasicFunction {
 
                 }
             }
-            logger.debug("No of MPEG-7 files: " + mpeg7counter); //debugging
+            //logger.debug("No of MPEG-7 files: " + mpeg7counter); //debugging
             result.add(new BooleanValue(true)); //todo cases
 
         } catch (InstantiationException ex) {
