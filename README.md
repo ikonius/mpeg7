@@ -30,11 +30,11 @@ to build the extensions directory. Edit the file extensions/build.properties and
     
 ### Function usage
 
-* **mpeg7:batch-transform($path as item()) as xs:boolean**
+* **mpeg7:batchTransform($path as item()) as xs:boolean**
 
 This function extracts the MPEG-7 descriptions of all .x3d files stored in the given $path parameter, where $path is the relative path of the collection in the database.
 
-    mpeg7:batch-transform('/db/apps/data/x3d')
+    mpeg7:batchTransform('/db/apps/data/x3d')
 
 * **mpeg7:singleTransform($collectionPath as item(), $fileName as item()) as xs:boolean**
 
