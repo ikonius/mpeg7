@@ -16,6 +16,7 @@ import org.exist.xquery.modules.mpeg7.x3d.geometries.ShapeIndexExtraction;
 /**
  *
  * @author Patti Spala <pd.spala@gmail.com>
+ * original code from http://svn.xj3d.org/xj3d_code/trunk/apps/cadfilter/src/java/xj3d/filter/filters/ExtrusionGeometry.java
  */
 public class ExtrusionToIFSFilter {
     private static final Logger logger = Logger.getLogger(ExtrusionToIFSFilter.class);
