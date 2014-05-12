@@ -103,13 +103,13 @@ public class ShapeIndexExtraction {
                 if (tempArray[j].length() == 0) {
                     jTemp++;
                 }
-                ;
+                
                 Points[i][j] = Float.parseFloat(tempArray[jTemp]);
                 jTemp++;
             }
-            ;
+            
         }
-        ;
+        
 
         coordFile.delete();
         pointFile.delete();

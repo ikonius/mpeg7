@@ -1,5 +1,6 @@
 package org.exist.xquery.modules.mpeg7.x3d.geometries;
 
+import org.exist.xquery.modules.mpeg7.x3d.filters.ExtrusionToIFSFilter;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -30,6 +31,7 @@ public class ExtrusionDetector extends GeometryDetector {
     @Override
     public void processShapes() throws XPathExpressionException, IOException {
         String crossSection, spine, scale, orientation;
+        String solid, ccw, convex, beginCap, endCap, creaseAngle;
         ArrayList<String> resultedExtrExtractionList = new ArrayList<String>();
         ArrayList<String> resultedExtrBBoxList = new ArrayList<String>();
         StringBuilder ExtrShapeStringBuilder = new StringBuilder();
@@ -47,34 +49,91 @@ public class ExtrusionDetector extends GeometryDetector {
                 elem = (Element) xPath.compile("//Shape/Extrusion[@DEF='" + def + "']").evaluate(this.getDoc().getDocumentElement(), XPathConstants.NODE);
             }
             HashMap<String, String[]> dictParams = new HashMap<String, String[]>();
-            scale = null;
-            orientation = null;
-            if (!(elem.hasAttribute("spine"))) {
-                continue;
+            if (elem.hasAttribute("spine")) {
+                spine = elem.getAttribute("spine");
+            } else {
+                //default Extrusion spine='0 0 0 0 1 0'
+                spine = "0 0 0 0 1 0";
+
             }
-            if (!(elem.hasAttribute("crossSection")) && (elem.hasAttribute("spine"))) {
+            if (elem.hasAttribute("crossSection")) {
+                crossSection = elem.getAttribute("crossSection");
+            } else {
                 //default Extrusion crossSection='1 1 1 -1 -1 -1 -1 1 1 1' is a square
                 crossSection = "1 1 1 -1 -1 -1 -1 1 1 1";
-            } else {
-                crossSection = elem.getAttribute("crossSection");
+
             }
-            spine = elem.getAttribute("spine");
-            dictParams.put("crossSection", new String[]{crossSection});
-            dictParams.put("spine", new String[]{spine});
             if (elem.hasAttribute("scale")) {
                 scale = elem.getAttribute("scale");
-                dictParams.put("scale", new String[]{scale});
+            } else {
+                //default Extrusion scale='1 1'
+                scale = "1 1";
             }
             if (elem.hasAttribute("orientation")) {
                 orientation = elem.getAttribute("orientation");
-                dictParams.put("orientation", new String[]{orientation});
+            } else {
+                //default Extrusion orientation='0 0 1 0'
+                orientation = "0 0 1 0";
             }
+
+            if (elem.hasAttribute("solid")) {
+                solid = elem.getAttribute("solid");
+            } else {
+                //default Extrusion solid='true'
+                solid = "true";
+            }
+
+            if (elem.hasAttribute("convex")) {
+                convex = elem.getAttribute("convex");
+            } else {
+                //default Extrusion convex='true'
+                convex = "true";
+            }
+
+            if (elem.hasAttribute("ccw")) {
+                ccw = elem.getAttribute("ccw");
+            } else {
+                //default Extrusion ccw='true'
+                ccw = "true";
+            }
+
+            if (elem.hasAttribute("beginCap")) {
+                beginCap = elem.getAttribute("beginCap");
+            } else {
+                //default Extrusion beginCap='true'
+                beginCap = "true";
+            }
+
+            if (elem.hasAttribute("endCap")) {
+                endCap = elem.getAttribute("endCap");
+            } else {
+                //default Extrusion endCap='true'
+                endCap = "true";
+            }
+
+            if (elem.hasAttribute("creaseAngle")) {
+                creaseAngle = elem.getAttribute("creaseAngle");
+            } else {
+                //default Extrusion creaseAngle='0'
+                creaseAngle = "0";
+            }
+            dictParams.put("scale", new String[]{scale});
+            dictParams.put("crossSection", new String[]{crossSection});
+            dictParams.put("spine", new String[]{spine});
+            dictParams.put("orientation", new String[]{orientation});
+            dictParams.put("solid", new String[]{solid});
+            dictParams.put("convex", new String[]{convex});
+            dictParams.put("ccw", new String[]{ccw});
+            dictParams.put("beginCap", new String[]{beginCap});
+            dictParams.put("endCap", new String[]{endCap});
+            dictParams.put("creaseAngle", new String[]{creaseAngle});
+
             this.setFile(new File("Extrusion.txt"));
 
             String coordTempFile = writeParamsToFile(dictParams, this.getFile(), this.getWriter());
 
             String[] ExtrTempFile = {coordTempFile};
-            String resultedExtraction = ExtrusionDescription.ExtrusionDescription(ExtrTempFile);
+            String resultedExtraction = new ExtrusionToIFSFilter(ExtrTempFile).filterGeometry();
 
             String ExtrBBox = resultedExtraction.substring(0, resultedExtraction.indexOf("&") - 1);
             String ExtrShape = resultedExtraction.substring(resultedExtraction.indexOf("&") + 1);
