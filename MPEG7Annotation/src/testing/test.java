@@ -65,7 +65,7 @@ public class test {
 
     private static void testExtrusion() {
         String command[] = new String[1];
-        command[0] = "Extrusion.txt";
+        command[0] = "Extrusion4.txt";
         try {
             ArrayList<String> resultedExtrExtractionList = new ArrayList<String>();
             ArrayList<String> resultedExtrBBoxList = new ArrayList<String>();

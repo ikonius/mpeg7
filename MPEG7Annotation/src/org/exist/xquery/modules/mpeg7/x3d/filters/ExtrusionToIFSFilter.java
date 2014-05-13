@@ -16,9 +16,11 @@ import org.exist.xquery.modules.mpeg7.x3d.geometries.ShapeIndexExtraction;
 /**
  *
  * @author Patti Spala <pd.spala@gmail.com>
- * original code from http://svn.xj3d.org/xj3d_code/trunk/apps/cadfilter/src/java/xj3d/filter/filters/ExtrusionGeometry.java
+ * original code from
+ * http://svn.xj3d.org/xj3d_code/trunk/apps/cadfilter/src/java/xj3d/filter/filters/ExtrusionGeometry.java
  */
 public class ExtrusionToIFSFilter {
+
     private static final Logger logger = Logger.getLogger(ExtrusionToIFSFilter.class);
     // Temp holding on to the number of polygons in the system     
     private int polygonCount;
@@ -90,12 +92,12 @@ public class ExtrusionToIFSFilter {
         switch (max_poly_size) {
             case 0:
                 logger.warn("No valid polygons found: Zero sized polygons");
-                //System.out.println("No valid polygons found: Zero sized polygons");
+            //System.out.println("No valid polygons found: Zero sized polygons");
 
             case 1:
             case 2:
                 logger.warn("No valid polygons. Max size " + max_poly_size);
-                //System.out.println("No valid polygons. Max size " + max_poly_size);
+            //System.out.println("No valid polygons. Max size " + max_poly_size);
         }
 
         StringBuilder coordinatesBuffer = new StringBuilder();
@@ -143,8 +145,8 @@ public class ExtrusionToIFSFilter {
                 }
             }
         } else {
-            // greater than 3, so start doing triangulation.
-            output_indices = new int[numCoordIndex * max_poly_size * 3];
+            // greater than 3, so start doing triangulation.            
+            output_indices = new int[numCoordIndex * (max_poly_size + 1) * 3];
 
             int face_index = 0;
             int i, j = 0;
@@ -200,6 +202,7 @@ public class ExtrusionToIFSFilter {
             indicesBuffer.append(' ');
         }
         //debug
+       // System.out.println("<IndexedLineSet coordIndex=\"" + indicesBuffer.toString() + "\" solid=\"" + String.valueOf(solid) + "\" > \n <Coordinate point=\"" + coordinatesBuffer.toString() + "\"/> \n </IndexedLineSet>");
         //System.out.println("<IndexedTriangleSet index=\"" + indicesBuffer.toString() + "\" solid=\"" + String.valueOf(solid) + "\" > \n <Coordinate point=\"" + coordinatesBuffer.toString() + "\"/> \n </IndexedTriangleSet>");
         //debug
         calculateBoundingBox();
@@ -231,7 +234,7 @@ public class ExtrusionToIFSFilter {
         for (int i = 0; i < indexesLength; i++) {
             indexes[i][0] = output_indices[i];
             indexes[i][1] = output_indices[i + 1];
-            indexes[i][2] = output_indices[i + 2];
+            indexes[i][2] = output_indices[i + 2];            
         }
         String shapeIndex = ShapeIndexExtraction.PerformActualComputation(points, indexes);
         bboxBuffer.append(shapeIndex);
@@ -442,7 +445,7 @@ public class ExtrusionToIFSFilter {
         z = new Vector3f[numberOfSpines];
 
         if (collinear) {
-            if (spineClosed) {                
+            if (spineClosed) {
                 StringBuilder buf = new StringBuilder("Spine data:");
                 for (Point3f sp : spines) {
                     buf.append(sp);
@@ -527,7 +530,7 @@ public class ExtrusionToIFSFilter {
             if (spineClosed) {
                 // spineClosed and not collinear - >  not all one point
                 y[0] = new Vector3f();
-                y[0].sub(spines[1], spines[last - 1]);
+                y[0].sub(spines[1], spines[last - 1]);               
                 if (!norm(y[0])) {
                     // bad case that the spine[n-2] == spine[1]
                     int w = last - 2;
@@ -542,7 +545,9 @@ public class ExtrusionToIFSFilter {
                         y[0].set(0, 0, 1);
                     }
                 }
-                y[last] = new Vector3f(y[0]);
+                y[last] = new Vector3f();
+                y[last].sub(spines[1], spines[last - 1]);
+                // y[last] = new Vector3f(y[0]);               
             } else {
                 y[0] = new Vector3f();
                 y[last] = new Vector3f();
@@ -668,7 +673,14 @@ public class ExtrusionToIFSFilter {
             rotations[i].setColumn(1, y[i]);
             rotations[i].setColumn(2, z[i]);
         }
-
+        if ((!endCap) && (!beginCap)) {
+            rotations[0].setRow(0, x[0]);
+            rotations[0].setRow(1, y[0]);
+            rotations[0].setRow(2, z[0]);
+            rotations[last].setRow(0, x[0]);
+            rotations[last].setRow(1, y[0]);
+            rotations[last].setRow(2, z[0]);
+        }
         Matrix3f[] correctionRotations = createCorrectionRotations(z);
         Vector3f tmp = new Vector3f();
         // Create the transforms
