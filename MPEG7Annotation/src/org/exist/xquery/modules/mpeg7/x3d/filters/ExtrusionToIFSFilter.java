@@ -201,8 +201,8 @@ public class ExtrusionToIFSFilter {
             indicesBuffer.append(output_indices[i]);
             indicesBuffer.append(' ');
         }
-        //debug
-       // System.out.println("<IndexedLineSet coordIndex=\"" + indicesBuffer.toString() + "\" solid=\"" + String.valueOf(solid) + "\" > \n <Coordinate point=\"" + coordinatesBuffer.toString() + "\"/> \n </IndexedLineSet>");
+        //un-comment to debug
+        //System.out.println("<IndexedLineSet coordIndex=\"" + indicesBuffer.toString() + "\" solid=\"" + String.valueOf(solid) + "\" > \n <Coordinate point=\"" + coordinatesBuffer.toString() + "\"/> \n </IndexedLineSet>");
         //System.out.println("<IndexedTriangleSet index=\"" + indicesBuffer.toString() + "\" solid=\"" + String.valueOf(solid) + "\" > \n <Coordinate point=\"" + coordinatesBuffer.toString() + "\"/> \n </IndexedTriangleSet>");
         //debug
         calculateBoundingBox();
@@ -673,6 +673,8 @@ public class ExtrusionToIFSFilter {
             rotations[i].setColumn(1, y[i]);
             rotations[i].setColumn(2, z[i]);
         }
+        //Extrusion Triangulation - resolved issues with endCaps
+        //Modified by Patti Spala
         if ((!endCap) && (!beginCap)) {
             rotations[0].setRow(0, x[0]);
             rotations[0].setRow(1, y[0]);
