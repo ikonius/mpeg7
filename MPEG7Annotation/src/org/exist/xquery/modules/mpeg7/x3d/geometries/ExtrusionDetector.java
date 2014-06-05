@@ -24,8 +24,9 @@ import org.w3c.dom.NodeList;
  */
 public class ExtrusionDetector extends GeometryDetector {
 
-    public ExtrusionDetector(Document doc) {
+    public ExtrusionDetector(Document doc) throws XPathExpressionException, IOException {
         super(doc);
+        processShapes();
     }
 
     @Override

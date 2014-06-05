@@ -28,8 +28,9 @@ public class ILSDetector extends GeometryDetector {
 
     private static final Logger logger = Logger.getLogger(ILSDetector.class);
 
-    public ILSDetector(Document doc) {
+    public ILSDetector(Document doc) throws IOException, XPathExpressionException {
         super(doc);
+        processShapes();
     }
 
     @Override

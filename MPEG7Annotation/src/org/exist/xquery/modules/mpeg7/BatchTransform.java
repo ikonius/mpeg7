@@ -29,6 +29,7 @@ import org.exist.xquery.modules.mpeg7.x3d.geometries.ExtrusionDetector;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.IFSDetector;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.ILSDetector;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.InlineDetector;
+import org.exist.xquery.modules.mpeg7.x3d.textures.TextureDetector;
 import org.xml.sax.SAXException;
 import org.xmldb.api.base.XMLDBException;
 
@@ -80,13 +81,13 @@ public class BatchTransform extends BasicFunction {
                         InlineDetector inlDetector = new InlineDetector(doc, detail.parentPath);
                         doc = inlDetector.retrieveInlineNodes();
                         IFSDetector ifsDetector = new IFSDetector(doc);
-                        ifsDetector.processShapes();
+                        //ifsDetector.processShapes();
                         ILSDetector ilsDetector = new ILSDetector(doc);
-                        ilsDetector.processShapes();
+                        //ilsDetector.processShapes();
                         ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
-                        extrusionDetector.processShapes();
-
-                        MP7Generator mp7Generator = new MP7Generator(detail, extrusionDetector.getParamMap(), xslSource);
+                        //extrusionDetector.processShapes();
+                        TextureDetector textureDetector = new TextureDetector(doc, detail.parentPath);                        
+                        MP7Generator mp7Generator = new MP7Generator(detail, extrusionDetector.getParamMap(), textureDetector.getHistograms(), textureDetector.getScalableColors(), xslSource);
                         mp7Generator.generateDescription();
 
                     } catch (XMLDBException ex) {

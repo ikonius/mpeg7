@@ -28,8 +28,9 @@ public class IFSDetector extends GeometryDetector {
 
     private static final Logger logger = Logger.getLogger(IFSDetector.class);
 
-    public IFSDetector(Document doc) {
+    public IFSDetector(Document doc) throws IOException, XPathExpressionException {
         super(doc);
+        processShapes();
     }
 
     @Override

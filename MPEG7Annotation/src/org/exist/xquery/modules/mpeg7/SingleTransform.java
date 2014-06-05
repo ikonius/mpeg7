@@ -2,15 +2,9 @@ package org.exist.xquery.modules.mpeg7;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import org.exist.xquery.modules.mpeg7.transformation.MP7Generator;
@@ -35,6 +29,7 @@ import org.exist.xquery.modules.mpeg7.x3d.geometries.ExtrusionDetector;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.IFSDetector;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.ILSDetector;
 import org.exist.xquery.modules.mpeg7.x3d.geometries.InlineDetector;
+import org.exist.xquery.modules.mpeg7.x3d.textures.TextureDetector;
 import org.xml.sax.SAXException;
 import org.xmldb.api.base.XMLDBException;
 
@@ -67,7 +62,7 @@ public class SingleTransform extends BasicFunction {
             return Sequence.EMPTY_SEQUENCE;
         }
 
-        try {           
+        try {
             String resourcePath = args[0].getStringValue();
             String fileName = args[1].getStringValue();
             X3DResourceDetail resource = new X3DResourceDetail(removeExtension(fileName), fileName, resourcePath);
@@ -85,30 +80,29 @@ public class SingleTransform extends BasicFunction {
             doc = inlDetector.retrieveInlineNodes();
 
             /*debugging
-            StringWriter sw = new StringWriter();
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.transform(new DOMSource(doc), new StreamResult(sw));
-            logger.info(sw.toString());
+             StringWriter sw = new StringWriter();
+             TransformerFactory tf = TransformerFactory.newInstance();
+             Transformer transformer = tf.newTransformer();
+             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+             transformer.transform(new DOMSource(doc), new StreamResult(sw));
+             logger.info(sw.toString());
                     
-            end debugging*/
-            
+             end debugging*/
             IFSDetector ifsDetector = new IFSDetector(doc);
-            ifsDetector.processShapes();
+            //ifsDetector.processShapes();
             ILSDetector ilsDetector = new ILSDetector(doc);
-            ilsDetector.processShapes();
+            //ilsDetector.processShapes();
             ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
-            extrusionDetector.processShapes();
-
-            MP7Generator mp7Generator = new MP7Generator(resource, extrusionDetector.getParamMap(), xslSource);
+            //extrusionDetector.processShapes();
+            TextureDetector textureDetector = new TextureDetector(doc, resource.parentPath);
+            MP7Generator mp7Generator = new MP7Generator(resource, extrusionDetector.getParamMap(), textureDetector.getHistograms(), textureDetector.getScalableColors(), xslSource);
             mp7Generator.generateDescription();
 
             //logger.debug("No of MPEG-7 files: " + mpeg7counter); //debugging
-            result.add(new BooleanValue(true)); 
+            result.add(new BooleanValue(true));
 
         } catch (InstantiationException ex) {
             logger.error("InstantiationException: ", ex);

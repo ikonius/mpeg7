@@ -4,9 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -38,13 +36,17 @@ public class MP7Generator {
     private static final Logger logger = Logger.getLogger(MP7Generator.class);
     protected X3DResourceDetail x3dResource;
     protected HashMap<String, String> paramDictMap;
+    protected HashMap<String, String> histograms;
+    protected HashMap<String, String> scalableColors;
     protected Transformer transformer;
     protected TransformerFactory factory;
     protected Source xslStream;
 
-    public MP7Generator(X3DResourceDetail x3dResource, HashMap<String, String> paramDictMap, String xslSource) {
+    public MP7Generator(X3DResourceDetail x3dResource, HashMap<String, String> paramDictMap, HashMap<String, String> histograms, HashMap<String, String> scalableColors, String xslSource) {
         this.x3dResource = x3dResource;
         this.paramDictMap = paramDictMap;
+        this.histograms = histograms;
+        this.scalableColors = scalableColors;
         this.factory = TransformerFactory.newInstance();
         this.xslStream = new StreamSource(new ByteArrayInputStream(xslSource.getBytes()));
     }
@@ -89,6 +91,19 @@ public class MP7Generator {
         this.xslStream = xslStream;
     }
 
+    public HashMap<String, String> getHistograms() {
+        return histograms;
+    }
+
+    public void setHistograms(HashMap<String, String> histograms) {
+        this.histograms = histograms;
+    }
+
+    public void setScalableColors(HashMap<String, String> scalableColors) {
+        this.scalableColors = scalableColors;
+    }
+    
+
     public void generateDescription() {
         try {
             //Get X3D source
@@ -129,12 +144,15 @@ public class MP7Generator {
 
     private void setTranformerParameters() {
 
-        this.transformer.setParameter("filename", this.x3dResource.parentPath + "/" + this.x3dResource.resourceName);
-        Set set = this.paramDictMap.entrySet();
-        Iterator i = set.iterator();
-        while (i.hasNext()) {
-            Map.Entry me = (Map.Entry) i.next();
+        this.transformer.setParameter("filename", this.x3dResource.parentPath + "/" + this.x3dResource.resourceName);        
+        for (Map.Entry me : this.paramDictMap.entrySet()) {
             this.transformer.setParameter(me.getKey().toString(), me.getValue().toString());
+        }        
+        for (Map.Entry entry : this.histograms.entrySet()) {
+            this.transformer.setParameter(entry.getKey().toString(), entry.getValue().toString());
+        }
+        for (Map.Entry entry : this.scalableColors.entrySet()) {
+            this.transformer.setParameter(entry.getKey().toString(), entry.getValue().toString());
         }
 
     }
@@ -171,7 +189,7 @@ class TransformationErrorListener implements ErrorListener {
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
 
-            String docSource = "${exist.home}/tools/wrapper/logs/annotation/transformErrors.xml";
+            String docSource = "/usr/local/exist2.2/tools/wrapper/logs/annotation/transformErrors.xml";
             File f = new File(docSource);
             Document doc;
             Element root;

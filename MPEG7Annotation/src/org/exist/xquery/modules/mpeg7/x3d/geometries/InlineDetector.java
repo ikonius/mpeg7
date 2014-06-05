@@ -14,7 +14,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import org.apache.commons.validator.UrlValidator;
-import org.apache.log4j.Logger;
 import org.exist.xquery.modules.mpeg7.storage.database.ExistDB;
 import org.exist.xquery.modules.mpeg7.storage.helpers.X3DResourceDetail;
 import org.w3c.dom.Document;
