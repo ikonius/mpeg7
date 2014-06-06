@@ -1,0 +1,17 @@
+java.lang.ClassCastException: [Ljava.lang.Object; cannot be cast to [Ljava.lang.String; 
+    	at org.exist.xquery.modules.mpeg7.x3d.textures.TextureDetector.getPixelsFromTextureCoordinates(TextureDetector.java:186) 
+    	at org.exist.xquery.modules.mpeg7.x3d.textures.TextureDetector.extractFeatures(TextureDetector.java:158) 
+    	at org.exist.xquery.modules.mpeg7.x3d.textures.TextureDetector.<init>(TextureDetector.java:42) 
+    	at org.exist.xquery.modules.mpeg7.SingleTransform.eval(SingleTransform.java:100) 
+    	at org.exist.xquery.BasicFunction.eval(BasicFunction.java:70) 
+    	at org.exist.xquery.InternalFunctionCall.eval(InternalFunctionCall.java:55) 
+    	at org.exist.xquery.DebuggableExpression.eval(DebuggableExpression.java:58) 
+    	at org.exist.xquery.DebuggableExpression.eval(DebuggableExpression.java:65) 
+    	at org.exist.xquery.LetExpr.eval(LetExpr.java:189) 
+    	at org.exist.xquery.LetExpr.eval(LetExpr.java:187) 
+    	at org.exist.xquery.BindingExpression.eval(BindingExpression.java:164) 
+    	at org.exist.xquery.AbstractExpression.eval(AbstractExpression.java:71) 
+    	at org.exist.xquery.PathExpr.eval(PathExpr.java:264) 
+    	at org.exist.xquery.TryCatchExpression.eval(TryCatchExpression.java:127) 
+    	at org.exist.xquery.AbstractExpression.eval(AbstractExpression.java:71) 
+    	at 

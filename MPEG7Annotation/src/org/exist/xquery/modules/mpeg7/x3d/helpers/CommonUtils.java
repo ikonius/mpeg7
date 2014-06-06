@@ -6,6 +6,7 @@
 package org.exist.xquery.modules.mpeg7.x3d.helpers;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 
@@ -24,5 +25,16 @@ public class CommonUtils {
             logger.info(pairs.getKey() + " : " + pairs.getValue());
             it.remove(); // avoids a ConcurrentModificationException
         }
+    }
+
+    public static int[] toIntArray(List<int[]> list) {
+        
+        int[] ret = new int[list.size() * 3];        
+        for (int i = 0; i < list.size(); i ++) {
+            ret[3*i] = list.get(i)[0];
+            ret[3*i + 1] = list.get(i)[1];
+            ret[3*i + 2] = list.get(i)[2];
+        }
+        return ret;
     }
 }
