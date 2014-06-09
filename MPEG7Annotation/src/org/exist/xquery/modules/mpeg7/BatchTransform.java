@@ -66,7 +66,7 @@ public class BatchTransform extends BasicFunction {
             //int mpeg7counter = 0; //debugging
             ExistDB db = new ExistDB();
             db.registerInstance();
-            String xslSource = db.retrieveModule("x3d_to_mpeg7_transform.xsl").toString();
+            String xslSource = db.retrieveModule("mpeg7_annotation.xsl").toString();
             List<X3DResourceDetail> x3dResources = db.getX3DResources(collectionPath);
             if (!x3dResources.isEmpty()) {
                 //logger.debug("No of X3D files: " + x3dResources.size()); //debugging

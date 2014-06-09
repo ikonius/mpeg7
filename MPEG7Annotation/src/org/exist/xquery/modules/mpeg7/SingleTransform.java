@@ -68,7 +68,7 @@ public class SingleTransform extends BasicFunction {
             X3DResourceDetail resource = new X3DResourceDetail(removeExtension(fileName), fileName, resourcePath);
             ExistDB db = new ExistDB();
             db.registerInstance();
-            String xslSource = db.retrieveModule("x3d_to_mpeg7_transform.xsl").toString();
+            String xslSource = db.retrieveModule("mpeg7_annotation.xsl").toString();
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
