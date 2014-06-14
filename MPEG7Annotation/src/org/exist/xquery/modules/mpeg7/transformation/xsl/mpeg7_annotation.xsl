@@ -1,4 +1,4 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:mpeg7="urn:mpeg:mpeg7:schema:2001" xmlns:str="http://exslt.org/strings" xmlns:functx="http://www.functx.com" xmlns:xalan="http://xml.apache.org/xalan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="urn:mpeg:mpeg7:schema:2001 Mpeg7-2001.xsd">    
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="urn:mpeg:mpeg7:schema:2001" xmlns:mpeg7="urn:mpeg:mpeg7:schema:2001" xmlns:str="http://exslt.org/strings" xmlns:functx="http://www.functx.com" xmlns:math="http://exslt.org/math" xmlns:xalan="http://xml.apache.org/xalan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="urn:mpeg:mpeg7:schema:2001 Mpeg7-2001.xsd">
     <xsl:import href="metadata.xsl" xml:base="http://54.72.206.163/exist/apps/annotation/modules/"/>
     <xsl:import href="content_collections.xsl" xml:base="http://54.72.206.163/exist/apps/annotation/modules/"/>
     <xsl:import href="textures.xsl" xml:base="http://54.72.206.163/exist/apps/annotation/modules/"/>
@@ -15,21 +15,14 @@
     <xsl:param name="EHDs"/>
     <xsl:param name="SCDs"/>
     <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
-
     <xsl:template match="/">
-        <xsl:element name="Mpeg7" xmlns="urn:mpeg:mpeg7:schema:2001" xmlns:mpeg7="urn:mpeg:mpeg7:schema:2001" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:mpeg7:schema:2001 Mpeg7-2001.xsd">
+        <Mpeg7 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:mpeg:mpeg7:schema:2001">
             <xsl:call-template name="Initialize_Metadata">
                 <xsl:with-param name="filename" select="$filename"/>
             </xsl:call-template>
-            <xsl:element name="Description">
-                <xsl:attribute name="xsi:type">
-                    <xsl:text>ContentEntityType</xsl:text>
-                </xsl:attribute>
-                <xsl:element name="MultimediaContent">
-                    <xsl:attribute name="xsi:type">
-                        <xsl:text>MultimediaCollectionType</xsl:text>
-                    </xsl:attribute>
-                    <xsl:element name="StructuredCollection">
+            <Description xsi:type="ContentEntityType">
+                <MultimediaContent xsi:type="MultimediaCollectionType">
+                    <StructuredCollection>
                         <xsl:call-template name="Declare_All_Transforms"/>
                         <xsl:call-template name="Texture_Descriptions">
                             <xsl:with-param name="EHDs" select="$EHDs"/>
@@ -46,11 +39,10 @@
                         <xsl:call-template name="Lighting_Descriptions"/>
                         <xsl:call-template name="Viewpoint_Descriptions"/>
                         <xsl:call-template name="Interaction_Descriptions"/>
-                        <xsl:call-template name="Relationships"/>
-                    </xsl:element>
-                </xsl:element>
-            </xsl:element>
-        </xsl:element>
+                        <xsl:call-template name="relationship_Descriptions"/>
+                    </StructuredCollection>
+                </MultimediaContent>
+            </Description>
+        </Mpeg7>
     </xsl:template>
-
 </xsl:stylesheet>

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,7 +160,7 @@ public class TextureDetector {
                         scdi = new ScalableColorImpl(img);
                     } else {
                         int[] pixels = getPixelsFromTextureCoordinates(points, img);
-                        logger.info(Arrays.toString(pixels));
+                        //logger.info(Arrays.toString(pixels));
                         scdi = new ScalableColorImpl(pixels);
                     }
                     String scdiBits = scdi.getStringRepresentation();                    

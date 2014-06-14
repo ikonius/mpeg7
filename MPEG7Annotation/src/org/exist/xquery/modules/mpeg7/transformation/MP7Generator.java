@@ -144,7 +144,7 @@ public class MP7Generator {
 
     private void setTranformerParameters() {
 
-        this.transformer.setParameter("filename", this.x3dResource.parentPath + "/" + this.x3dResource.resourceName);        
+        this.transformer.setParameter("filename", this.x3dResource.parentPath + "/" + this.x3dResource.resourceFileName);        
         for (Map.Entry me : this.paramDictMap.entrySet()) {
             this.transformer.setParameter(me.getKey().toString(), me.getValue().toString());
         }        

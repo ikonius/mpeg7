@@ -52,25 +52,29 @@ public class Validator {
     public boolean isValid() {
 
         try {
-            setupImplicitNamespaces();
-            setupXmlOptions();
+            this.setupImplicitNamespaces();
+            this.setupXmlOptions();
             this.mpeg7Document = Mpeg7Document.Factory.parse(this.inputFile);
             this.mpeg7Document.save(this.inputFile);
             boolean valid = this.mpeg7Document.validate(xmlOptions);
-            logger.info("MPEG7 Document: " + this.inputFile.getName() + " validation result: " + valid);
+            //logger.info("MPEG7 Document: " + this.inputFile.getName() + " validation result: " + valid);
+            System.out.println("MPEG7 Document: " + this.inputFile.getName() + " validation result: " + valid);
             if (!valid) {                
                 Iterator iter = this.validationErrors.iterator();
                 while (iter.hasNext()) {
-                    logger.error("Validation Error >> " + iter.next());
+                    //logger.error("Validation Error >> " + iter.next());
+                    System.out.println("Validation Error >> " + iter.next());
                 }
             }
             return valid;
         } catch (XmlException exXML) {
-            logger.error("XmlException: "+ exXML);
+//            logger.error("XmlException: "+ exXML);
+            System.out.println("XmlException: "+ exXML);
             return false;
 
         } catch (IOException exXML) {
-            logger.error("IOException: "+ exXML);
+//            logger.error("IOException: "+ exXML);
+            System.out.println("IOException: "+ exXML);
             return false;
         }
 

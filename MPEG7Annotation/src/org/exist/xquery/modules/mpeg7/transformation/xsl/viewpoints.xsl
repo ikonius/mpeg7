@@ -1,17 +1,12 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:mpeg7="urn:mpeg:mpeg7:schema:2001" xmlns:str="http://exslt.org/strings" xmlns:functx="http://www.functx.com" xmlns:xalan="http://xml.apache.org/xalan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="urn:mpeg:mpeg7:schema:2001 Mpeg7-2001.xsd">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="urn:mpeg:mpeg7:schema:2001" xmlns:mpeg7="urn:mpeg:mpeg7:schema:2001" xmlns:str="http://exslt.org/strings" xmlns:functx="http://www.functx.com" xmlns:math="http://exslt.org/math" xmlns:xalan="http://xml.apache.org/xalan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="urn:mpeg:mpeg7:schema:2001 Mpeg7-2001.xsd">
     <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
     <xsl:template name="Viewpoint_Descriptions">
         <xsl:if test="//Viewpoint">
-            <xsl:element name="Collection" xsi:type="DescriptorCollectionType">
-                <xsl:attribute name="xsi:type">
-                    <xsl:text>DescriptorCollectionType</xsl:text>
-                </xsl:attribute>
-                <xsl:attribute name="id">
-                    <xsl:text>Viewpoints</xsl:text>
-                </xsl:attribute>
+            <Collection xsi:type="DescriptorCollectionType" id="Viewpoints">                
                 <xsl:for-each select="/X3D/Scene//*[(self::Transform) or (self::Group) or (self::Anchor) or (self::Collision) or (self::Billboard) or (self::LOD) or (self::Switch)] | /X3D/Scene/ProtoDeclare/ProtoBody/*[(self::Transform) or (self::Group) or (self::Anchor) or (self::Collision) or (self::Billboard) or (self::LOD) or (self::Switch)]">
-                    <xsl:if test=".//Viewpoint">
-                        <xsl:element name="DescriptorCollection">
+                    <xsl:variable name="nodeName" select="name(.)"/>
+                    <xsl:if test=".//Viewpoint">                        
+                        <DescriptorCollection>
                             <xsl:attribute name="id">
                                 <xsl:value-of select="concat('Viewpoint_',generate-id())"/>
                             </xsl:attribute>
@@ -24,34 +19,8 @@
                                         <xsl:value-of select="concat('Viewpoint_',@USE)"/>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:if test="self::Transform">
-                                            <xsl:text>Transform_</xsl:text>
-                                            <xsl:number count="Transform" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::Group">
-                                            <xsl:text>Group_</xsl:text>
-                                            <xsl:number count="Group" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::Anchor">
-                                            <xsl:text>Anchor_</xsl:text>
-                                            <xsl:number count="Anchor" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::Collision">
-                                            <xsl:text>Collision_</xsl:text>
-                                            <xsl:number count="Collision" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::Billboard">
-                                            <xsl:text>Billboard_</xsl:text>
-                                            <xsl:number count="Billboard" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::LOD">
-                                            <xsl:text>LOD_</xsl:text>
-                                            <xsl:number count="LOD" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::Switch">
-                                            <xsl:text>Switch_</xsl:text>
-                                            <xsl:number count="Switch" from="Scene" level="single"/>
-                                        </xsl:if>
+                                        <xsl:value-of select="concat($nodeName,'_')"/>                        
+                                        <xsl:value-of select="1+count(preceding-sibling::*[name(.)=$nodeName])"/>                                 
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:attribute>
@@ -82,8 +51,8 @@
                                     </xsl:for-each>
                                 </xsl:otherwise>
                             </xsl:choose>
-                        </xsl:element>
-                        <xsl:element name="DescriptorCollectionRef">
+                        </DescriptorCollection>
+                        <DescriptorCollectionRef>
                             <xsl:attribute name="href">
                                 <xsl:choose>
                                     <xsl:when test="@DEF != ''">
@@ -93,42 +62,17 @@
                                         <xsl:value-of select="concat('#',@USE)"/>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:if test="self::Transform">
-                                            <xsl:text>Transform_</xsl:text>
-                                            <xsl:number count="Transform" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::Group">
-                                            <xsl:text>Group_</xsl:text>
-                                            <xsl:number count="Group" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::Anchor">
-                                            <xsl:text>Anchor_</xsl:text>
-                                            <xsl:number count="Anchor" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::Collision">
-                                            <xsl:text>Collision_</xsl:text>
-                                            <xsl:number count="Collision" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::Billboard">
-                                            <xsl:text>Billboard_</xsl:text>
-                                            <xsl:number count="Billboard" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::LOD">
-                                            <xsl:text>LOD_</xsl:text>
-                                            <xsl:number count="LOD" from="Scene" level="single"/>
-                                        </xsl:if>
-                                        <xsl:if test="self::Switch">
-                                            <xsl:text>Switch_</xsl:text>
-                                            <xsl:number count="Switch" from="Scene" level="single"/>
-                                        </xsl:if>
+                                        <xsl:value-of select="concat('#',$nodeName,'_')"/>                        
+                                        <xsl:value-of select="1+count(preceding-sibling::*[name(.)=$nodeName])"/>                                  
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:attribute>
-                        </xsl:element>
+                        </DescriptorCollectionRef>
                     </xsl:if>
                 </xsl:for-each>
                 <xsl:for-each select="//Viewpoint[(not(parent::Transform)) and (not(parent::Group)) and (not(parent::Anchor)) and (not(parent::Collision)) and (not(parent::Billboard)) and (not(parent::LOD)) and (not(parent::Switch))]">
-                    <xsl:element name="DescriptorCollection">
+                    <xsl:variable name="nodeName" select="name(.)"/>                   
+                    <DescriptorCollection>
                         <xsl:attribute name="id">
                             <xsl:value-of select="concat('Viewpoint_',generate-id())"/>
                         </xsl:attribute>
@@ -141,10 +85,8 @@
                                     <xsl:value-of select="concat('Viewpoint_',@USE)"/>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:if test="self::Viewpoint">
-                                        <xsl:text>Viewpoint_</xsl:text>
-                                        <xsl:number count="Viewpoint" from="Scene" level="single"/>
-                                    </xsl:if>
+                                    <xsl:value-of select="concat($nodeName,'_')"/>                        
+                                    <xsl:value-of select="1+count(preceding-sibling::*[name(.)=$nodeName])"/>    
                                 </xsl:otherwise>
                             </xsl:choose>
                         </xsl:attribute>
@@ -161,8 +103,8 @@
                                 </xsl:call-template>
                             </xsl:otherwise>
                         </xsl:choose>
-                    </xsl:element>
-                    <xsl:element name="DescriptorCollectionRef">
+                    </DescriptorCollection>
+                    <DescriptorCollectionRef>
                         <xsl:attribute name="href">
                             <xsl:choose>
                                 <xsl:when test="@DEF != ''">
@@ -172,25 +114,20 @@
                                     <xsl:value-of select="concat('#',@USE)"/>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:if test="self::Viewpoint">
-                                        <xsl:text>#Viewpoint_</xsl:text>
-                                        <xsl:number count="Viewpoint" from="Scene" level="single"/>
-                                    </xsl:if>
+                                    <xsl:value-of select="concat('#',$nodeName,'_')"/>                        
+                                    <xsl:value-of select="1+count(preceding-sibling::*[name(.)=$nodeName])"/>    
                                 </xsl:otherwise>
                             </xsl:choose>
                         </xsl:attribute>
-                    </xsl:element>
+                    </DescriptorCollectionRef>
                 </xsl:for-each>
-            </xsl:element>
+            </Collection>
         </xsl:if>
     </xsl:template>
     <xsl:template name="Viewpoint_descriptors">
         <xsl:param name="path"/>
-        <xsl:element name="Descriptor">
-            <xsl:attribute name="xsi:type">
-                <xsl:text>Viewpoint3DType</xsl:text>
-            </xsl:attribute>
-            <xsl:element name="Viewpoint3D">
+        <Descriptor xsi:type="Viewpoint3DType">            
+            <Viewpoint3D>
                 <xsl:if test="$path/attribute::description">
                     <xsl:attribute name="description">
                         <xsl:value-of select="$path/attribute::description"/>
@@ -216,9 +153,9 @@
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:attribute>
-            </xsl:element>
-            <xsl:element name="Viewpoint3DPosition">
-                <xsl:element name="Orientation">
+            </Viewpoint3D>
+            <Viewpoint3DPosition>
+                <Orientation>
                     <xsl:choose>
                         <xsl:when test="$path/attribute::orientation">
                             <xsl:value-of select="$path/attribute::orientation"/>
@@ -227,8 +164,8 @@
                             <xsl:text>0 0 1 0</xsl:text>
                         </xsl:otherwise>
                     </xsl:choose>
-                </xsl:element>
-                <xsl:element name="Position">
+                </Orientation>
+                <Position>
                     <xsl:choose>
                         <xsl:when test="$path/attribute::position">
                             <xsl:value-of select="$path/attribute::position"/>
@@ -237,8 +174,8 @@
                             <xsl:text>0 0 10</xsl:text>
                         </xsl:otherwise>
                     </xsl:choose>
-                </xsl:element>
-                <xsl:element name="CenterOfRotation">
+                </Position>
+                <CenterOfRotation>
                     <xsl:choose>
                         <xsl:when test="$path/attribute::centerOfRotation">
                             <xsl:value-of select="$path/attribute::centerOfRotation"/>
@@ -247,8 +184,8 @@
                             <xsl:text>0 0 0</xsl:text>
                         </xsl:otherwise>
                     </xsl:choose>
-                </xsl:element>
-            </xsl:element>
-        </xsl:element>
+                </CenterOfRotation>
+            </Viewpoint3DPosition>
+        </Descriptor>
     </xsl:template>
 </xsl:stylesheet>
