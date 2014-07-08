@@ -22,6 +22,7 @@ import org.exist.xquery.modules.mpeg7.x3d.colors.ScalableColorImpl;
 import org.exist.xquery.modules.mpeg7.x3d.textures.EdgeHistogramImplementation;
 import org.exist.xquery.modules.mpeg7.x3d.filters.ExtrusionToIFSFilter;
 import org.exist.xquery.modules.mpeg7.x3d.helpers.CommonUtils;
+import org.exist.xquery.modules.mpeg7.x3d.textures.SURFManager.SURFDescriptor;
 
 /**
  *
@@ -34,13 +35,14 @@ public class test {
         String delimiter = " ";
         // getLength(temp, delimiter);     
 
-        testValidator();
+        //testValidator();
         //testColorExtraction();         
         //testColorDescriptor();
         //testIndexer(new String[]{"."});
         //testExtrusion();        
         //testURIResolver();
         //testIFSExtraction();
+        testSURF();
     }
 
     private static void testValidator() {
@@ -259,6 +261,15 @@ public class test {
         for (int i = 0; i < tempSplit.length; i++) {
             System.out.println(i + ": " + tempSplit[i]);
         }
+    }
+
+    private static void testSURF() throws IOException {
+
+        BufferedImage bimg = ImageIO.read(new File("MarineDesertCamo.jpg"));
+        SURFDescriptor surf = new SURFDescriptor(bimg, 64);
+        String histogram = surf.getStringRepresentation();
+        System.out.println("histogram:" + histogram);
+        System.out.println("length:" + surf.clusterSize());
     }
 
 }

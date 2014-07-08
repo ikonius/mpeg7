@@ -7,6 +7,7 @@
     <xsl:param name="extrusionBBoxParams"/>
     <xsl:param name="EHDs"/>
     <xsl:param name="SCDs"/>
+    <xsl:param name="SURF"/>
     <xsl:template name="Geometry_Descriptions">
         <xsl:if test="//Shape">
             <Collection xsi:type="DescriptorCollectionType" id="Geometries">  
@@ -471,6 +472,14 @@
             <Coeff>                    
                 <xsl:value-of select="$SCParts[last()]"/>
             </Coeff>
+        </Descriptor>
+        <xsl:variable name="SURFDescrs" select="tokenize($SURF,'#')[$position]"/>
+        <xsl:variable name="SURFParts" select="tokenize(tokenize($SURFDescrs,':')[last()],';')"/>        
+        <Descriptor xsi:type="SURFeaturesType">               
+            <Vocabulary size="{$SURFParts[1]}" location="{concat('Vocabularies/SURF/Vocab',$SURFParts[1],'.iVocab')}"/>
+            <BagOfSURF>                       
+                <xsl:value-of select="$SURFParts[last()]"/>                
+            </BagOfSURF>
         </Descriptor>
     </xsl:template>
 </xsl:stylesheet>

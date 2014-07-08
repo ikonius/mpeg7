@@ -38,15 +38,17 @@ public class MP7Generator {
     protected HashMap<String, String> paramDictMap;
     protected HashMap<String, String> histograms;
     protected HashMap<String, String> scalableColors;
+    protected HashMap<String, String> surfeatures;
     protected Transformer transformer;
     protected TransformerFactory factory;
     protected Source xslStream;
 
-    public MP7Generator(X3DResourceDetail x3dResource, HashMap<String, String> paramDictMap, HashMap<String, String> histograms, HashMap<String, String> scalableColors, String xslSource) {
+    public MP7Generator(X3DResourceDetail x3dResource, HashMap<String, String> paramDictMap, HashMap<String, String> histograms, HashMap<String, String> scalableColors, HashMap<String, String> surfeatures, String xslSource) {
         this.x3dResource = x3dResource;
         this.paramDictMap = paramDictMap;
         this.histograms = histograms;
         this.scalableColors = scalableColors;
+        this.surfeatures = surfeatures;
         this.factory = TransformerFactory.newInstance();
         this.xslStream = new StreamSource(new ByteArrayInputStream(xslSource.getBytes()));
     }
@@ -154,7 +156,9 @@ public class MP7Generator {
         for (Map.Entry entry : this.scalableColors.entrySet()) {
             this.transformer.setParameter(entry.getKey().toString(), entry.getValue().toString());
         }
-
+        for (Map.Entry entry : this.surfeatures.entrySet()) {
+            this.transformer.setParameter(entry.getKey().toString(), entry.getValue().toString());
+        }
     }
 }
 

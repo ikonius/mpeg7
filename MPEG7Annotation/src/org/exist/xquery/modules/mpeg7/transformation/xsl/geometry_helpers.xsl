@@ -78,7 +78,7 @@
     <xsl:template name="shapeExtraction">
         <xsl:param name="stringOfIFS"/>
         <xsl:variable name="countPoints" select="count(tokenize($stringOfIFS, ' '))"/>
-        <xsl:element name="Shape3DType">
+        <xsl:element name="Shape3D">
             <xsl:attribute name="xsi:type">
                 <xsl:text>Shape3DType</xsl:text>
             </xsl:attribute>
@@ -108,7 +108,7 @@
     <xsl:template name="extrusionShapeExtraction">
         <xsl:param name="stringOfExtr"/>
         <xsl:variable name="countPoints" select="count(tokenize($stringOfExtr, ' '))"/>
-        <xsl:element name="Shape3DType">
+        <xsl:element name="Shape3D">
             <xsl:attribute name="xsi:type">
                 <xsl:text>Shape3DType</xsl:text>
             </xsl:attribute>

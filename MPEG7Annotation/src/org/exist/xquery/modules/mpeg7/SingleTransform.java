@@ -98,7 +98,7 @@ public class SingleTransform extends BasicFunction {
             ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
             //extrusionDetector.processShapes();
             TextureDetector textureDetector = new TextureDetector(doc, resource.parentPath);
-            MP7Generator mp7Generator = new MP7Generator(resource, extrusionDetector.getParamMap(), textureDetector.getHistograms(), textureDetector.getScalableColors(), xslSource);
+            MP7Generator mp7Generator = new MP7Generator(resource, extrusionDetector.getParamMap(), textureDetector.getHistograms(), textureDetector.getScalableColors(), textureDetector.getSURF(), xslSource);
             mp7Generator.generateDescription();
 
             //logger.debug("No of MPEG-7 files: " + mpeg7counter); //debugging

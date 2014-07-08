@@ -18,6 +18,7 @@ import org.apache.commons.validator.UrlValidator;
 import org.apache.log4j.Logger;
 import org.exist.xquery.modules.mpeg7.x3d.colors.ScalableColorImpl;
 import org.exist.xquery.modules.mpeg7.x3d.helpers.CommonUtils;
+import org.exist.xquery.modules.mpeg7.x3d.textures.SURFManager.SURFDescriptor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -33,6 +34,7 @@ public class TextureDetector {
     private HashMap<String, TextureParameters> textureParamMap;
     private HashMap<String, String> histograms;
     private HashMap<String, String> scalableColors;
+    private HashMap<String, String> surfeatures;
     private static final Logger logger = Logger.getLogger(TextureDetector.class);
 
     public TextureDetector(Document doc, String basePath) throws XPathExpressionException, ParserConfigurationException, MalformedURLException, IOException {
@@ -65,6 +67,10 @@ public class TextureDetector {
 
     public HashMap<String, String> getScalableColors() {
         return scalableColors;
+    }
+    
+       public HashMap<String, String> getSURF() {
+        return surfeatures;
     }
 
     private void retrieveImageList() throws XPathExpressionException, ParserConfigurationException, MalformedURLException {
@@ -132,15 +138,17 @@ public class TextureDetector {
     private void extractFeatures() {
         histograms = new HashMap<String, String>();
         scalableColors = new HashMap<String, String>();
+        surfeatures = new HashMap<String, String>();
         StringBuilder textureHistogramsBuilder = new StringBuilder();
         StringBuilder textureScalableColorsBuilder = new StringBuilder();
+        StringBuilder textureSURFBuilder = new StringBuilder();
         for (Map.Entry<String, TextureParameters> entry : textureParamMap.entrySet()) {
 
             TextureParameters params = entry.getValue();
             String shapeName = params.nodeName();
             ArrayList<String> textureUrls = params.urls();
             String[] points = params.points();
-            int urlSize = textureUrls.size();            
+            int urlSize = textureUrls.size();
             for (int i = 0; i < urlSize; i++) {
                 String textureUrl = textureUrls.get(i);
                 try {
@@ -163,7 +171,7 @@ public class TextureDetector {
                         //logger.info(Arrays.toString(pixels));
                         scdi = new ScalableColorImpl(pixels);
                     }
-                    String scdiBits = scdi.getStringRepresentation();                    
+                    String scdiBits = scdi.getStringRepresentation();
                     String scalableColorParts = scdiBits.substring(scdiBits.indexOf(";") + 1, scdiBits.length());
                     textureScalableColorsBuilder.append(shapeName);
                     textureScalableColorsBuilder.append(":");
@@ -171,7 +179,16 @@ public class TextureDetector {
                     if (i < urlSize) {
                         textureScalableColorsBuilder.append("#");
                     }
-
+                    //SURF
+                    SURFDescriptor surf = new SURFDescriptor(img, 64);
+                    String histogram = surf.getStringRepresentation();
+                    
+                    textureSURFBuilder.append(shapeName);
+                    textureSURFBuilder.append(':');
+                    textureSURFBuilder.append(histogram);
+                    if (i < urlSize) {
+                        textureSURFBuilder.append('#');
+                    }
                     break;
                 } catch (IOException ex) {
                     logger.warn(ex);
@@ -179,9 +196,10 @@ public class TextureDetector {
             }
 
         }
-        //logger.info(textureScalableColorsBuilder.toString());
+        //logger.info(textureSURFBuilder.toString());
         histograms.put("EHDs", textureHistogramsBuilder.toString());
         scalableColors.put("SCDs", textureScalableColorsBuilder.toString());
+        surfeatures.put("SURF", textureSURFBuilder.toString());
         //CommonUtils.printMap(histograms);        
 
     }
@@ -200,11 +218,11 @@ public class TextureDetector {
             int _y = Math.round(t * imgHeight);
             int y = imgHeight - _y;
             //edge correction for neighbourhood detection
-            if(x>=imgWidth){
-                x=imgWidth - 1;
+            if (x >= imgWidth) {
+                x = imgWidth - 1;
             }
-            if(y>=imgHeight){
-                y=imgHeight - 1;
+            if (y >= imgHeight) {
+                y = imgHeight - 1;
             }
             STCoords coord = new STCoords(s, t);
             stValues.add(coord);

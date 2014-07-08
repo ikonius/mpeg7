@@ -14,6 +14,7 @@
     <xsl:param name="extrusionBBoxParams"/>
     <xsl:param name="EHDs"/>
     <xsl:param name="SCDs"/>
+    <xsl:param name="SURF"/>
     <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
     <xsl:template match="/">
         <Mpeg7 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:mpeg:mpeg7:schema:2001">
@@ -24,17 +25,15 @@
                 <MultimediaContent xsi:type="MultimediaCollectionType">
                     <StructuredCollection>
                         <xsl:call-template name="Declare_All_Transforms"/>
-                        <xsl:call-template name="Texture_Descriptions">
-                            <xsl:with-param name="EHDs" select="$EHDs"/>
-                            <xsl:with-param name="SCDs" select="$SCDs"/>
-                        </xsl:call-template>
+                        <xsl:call-template name="Texture_Descriptions"/>                            
                         <xsl:call-template name="Geometry_Descriptions">
                             <xsl:with-param name="IFSPointsExtraction" select="$IFSPointsExtraction"/>
                             <xsl:with-param name="ILSPointsExtraction" select="$ILSPointsExtraction"/>
                             <xsl:with-param name="extrusionPointsExtraction" select="$extrusionPointsExtraction"/>
                             <xsl:with-param name="extrusionBBoxParams" select="$extrusionBBoxParams"/>
                             <xsl:with-param name="EHDs" select="$EHDs"/>
-                            <xsl:with-param name="SCDs" select="$SCDs"/>                            
+                            <xsl:with-param name="SCDs" select="$SCDs"/>
+                            <xsl:with-param name="SURF" select="$SURF"/>                            
                         </xsl:call-template>
                         <xsl:call-template name="Lighting_Descriptions"/>
                         <xsl:call-template name="Viewpoint_Descriptions"/>
