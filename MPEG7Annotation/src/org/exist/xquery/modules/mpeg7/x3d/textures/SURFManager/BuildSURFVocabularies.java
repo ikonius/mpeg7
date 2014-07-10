@@ -2,12 +2,19 @@ package org.exist.xquery.modules.mpeg7.x3d.textures.SURFManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import javax.activation.MimetypesFileTypeMap;
 import net.sf.javaml.clustering.Clusterer;
 import net.sf.javaml.clustering.KMeans;
 import net.sf.javaml.core.Dataset;
@@ -17,7 +24,8 @@ import net.sf.javaml.core.Instance;
 import net.sf.javaml.distance.DistanceMeasure;
 import net.sf.javaml.distance.EuclideanDistance;
 import net.sf.javaml.tools.data.FileHandler;
-import org.apache.log4j.Logger;
+import org.exist.xquery.modules.mpeg7.x3d.helpers.CommonUtils;
+//import org.apache.log4j.Logger;
 
 /**
  *
@@ -25,86 +33,79 @@ import org.apache.log4j.Logger;
  */
 public class BuildSURFVocabularies {
 
-    private static final Logger logger = Logger.getLogger(BuildSURFVocabularies.class);
+    //private static final Logger logger = Logger.getLogger(BuildSURFVocabularies.class);
+    public static void main(String args[]) throws URISyntaxException {
+        int vocabSize = 128;
 
-    public static void main(String args[]) {
-        int VocabSize = 128;
+        List<Path> fileList = ListDirectories.plainFileListing("/usr/local/exist2.2/webapp/WEB-INF/data/fs/db/3dData/x3d");
+        Dataset entireDataset = new DefaultDataset();
+        Dataset imageSURF;
+        SURFOperations surfOperations = new SURFOperations();
 
-        DirectoryStream<Path> FileList = PlainFileListing("D:\\SymformFromOffice\\Research\\iPromotion-X3D\\MPEG-7 2.0\\SURFDatabase\\Data\\ImageCollection");
-        Dataset EntireDataset = new DefaultDataset();
-        Dataset ImageSURF;
-        SURFOperations Extractor = new SURFOperations();
+        File forSizeEval;
+        Double[] surfValues = new Double[64];
+        double[] imageSurfValues = new double[64];
 
-        
-        File ForSizeEval;
-        Double[] tmpVals = new Double[64];
-        double[] tmpVals2 = new double[64];
-
-        for (Path file : FileList) {
+        System.out.println("Total files count: " + fileList.size());
+        for (Path file : fileList) {
             try {
-                System.out.println(file.toString());
-                ForSizeEval = new File(file.toString());
-                // Skip files larger than 5MB for memory considerations
-                if (ForSizeEval.length() <= 5 * Math.pow(2, 20)) {
-                    ImageSURF = Extractor.extractFromFile(file.toString());
-                    for (int kkk = 0; kkk < ImageSURF.size(); kkk++) {
-                        tmpVals = ImageSURF.get(kkk).values().toArray(tmpVals);
-                        for (int lll = 0; lll < tmpVals.length; lll++) {
-                            tmpVals2[lll] = tmpVals[lll];
+                //System.out.println(file.toString());
+                forSizeEval = new File(file.toString());
+                MimetypesFileTypeMap mtftp = new MimetypesFileTypeMap();
+                mtftp.addMimeTypes("image png tif gif jpg jpeg bmp");
+                String mimetype =mtftp.getContentType(forSizeEval);                                
+                // Skip files that are not images and larger than 5MB for memory considerations
+                if ((mimetype.equals("image")) && (forSizeEval.length() <= (5 * Math.pow(2, 20)))) {
+                    imageSURF = surfOperations.extractFromFile(file.toString());
+                    for (int i = 0; i < imageSURF.size(); i++) {
+                        surfValues = imageSURF.get(i).values().toArray(surfValues);
+                        for (int j = 0; j < surfValues.length; j++) {
+                            imageSurfValues[j] = surfValues[j];
                         }
-                        ImageSURF.set(kkk, new DenseInstance(tmpVals2));
+                        imageSURF.set(i, new DenseInstance(imageSurfValues));
                     }
-                    EntireDataset.addAll(ImageSURF);
-                } else {
-                    System.out.println("Too big");
+                    entireDataset.addAll(imageSURF);
                 }
-            } catch (Exception e) {
+            } catch (Exception ex) {
+                System.out.println("Exception: " + ex);
                 System.out.println("***************************************************************");
             }
         }
-
+        //exportDataSet
         try {
-            FileHandler.exportDataset(EntireDataset, new File("D:\\EntireDataset.iData"));
-        } catch (Exception e) {
+            FileHandler.exportDataset(entireDataset, new File("/usr/local/exist2.2/VocabularyData/EntireDataset.iData"));
+        } catch (IOException e) {
             System.out.println("FailedToStore");
-            System.out.println(e.toString());
+            System.out.println(e);
         }
-        
+        //load the Complete DataSet
         try {
-            EntireDataset = FileHandler.loadDataset(new File("D:\\EntireDataset.iData"));
+            entireDataset = FileHandler.loadDataset(new File("/usr/local/exist2.2/VocabularyData/EntireDataset.iData"));
         } catch (IOException ex) {
-            logger.error(ex);
+            System.out.println(ex);
+            //logger.error(ex);
         }
 
-        Instance[] Vocabulary = OrganizeVocab(EntireDataset, VocabSize);
+        Instance[] vocabulary = organizeVocab(entireDataset, vocabSize);
 
-        Dataset VocabToStore = new DefaultDataset();
-        for (Instance Vocabulary1 : Vocabulary) {
-            VocabToStore.add(Vocabulary1);
+        Dataset vocabToStore = new DefaultDataset();
+        for (Instance vocabInstance : vocabulary) {
+            vocabToStore.add(vocabInstance);
         }
         try {
-            FileHandler.exportDataset(VocabToStore, new File("http://54.72.206.163/exist/3dData/Vocabularies/SURF/Vocab" + String.valueOf(VocabSize) + ".iVocab"));
+            String fileName = "Vocab" + String.valueOf(vocabSize) + ".iVocab";
+            URL link = new URL("http://54.72.206.163/exist/3dData/Vocabularies/SURF/" + fileName);
+            CommonUtils.downloadFile(fileName, link);
+            File vocabFile = new File(fileName);
+            FileHandler.exportDataset(vocabToStore, vocabFile);
         } catch (IOException ex) {
-          logger.error(ex);
+            System.out.println(ex);
+            //logger.error(ex);
         }
 
     }
 
-    public static DirectoryStream<Path> PlainFileListing(String PathStr) {
-        DirectoryStream<Path> stream = null;
-        Path dir = Paths.get(PathStr);
-        try {
-            stream = Files.newDirectoryStream(dir);
-            return (stream);
-        } catch (IOException ex) {
-            // IOException can never be thrown by the iteration.
-            // In this snippet, it can only be thrown by newDirectoryStream.
-            logger.error(ex);
-            return stream;
-        }
-    }
-
-    public static Instance[] OrganizeVocab(Dataset data, int numberOfClusters) {
+    public static Instance[] organizeVocab(Dataset data, int numberOfClusters) {
 
         int subSampleSize = 200000;
         int numberOfIterations = 500;
@@ -121,6 +122,8 @@ public class BuildSURFVocabularies {
 
         Dataset subData = new DefaultDataset();
 
+        int indexesListSize = IndexesList.size();
+        if (indexesListSize<subSampleSize) subSampleSize = indexesListSize;        
         for (int ii = 0; ii < subSampleSize; ii++) {
             subData.add(data.get(IndexesList.get(ii)));
             //subData.add(data.get(ii));
@@ -128,20 +131,21 @@ public class BuildSURFVocabularies {
         //System.out.println("Kept " + String.valueOf(subData.size()) + " points of length " + String.valueOf(FeatureLength));
 
         try {
-            FileHandler.exportDataset(subData, new File("D:\\subDataset.iData"));
+            FileHandler.exportDataset(subData, new File("/usr/local/exist2.2/VocabularyData/subDataset.iData"));
         } catch (IOException ex) {
-            logger.error(ex);
+//            logger.error(ex);
+            System.out.println(ex);
         }
 
         Clusterer km = new KMeans(numberOfClusters, numberOfIterations, dm);
-        Dataset[] clusters = km.cluster(subData);        
+        Dataset[] clusters = km.cluster(subData);
 
         //Calculate cluster centroids
         Instance[] centroids = new Instance[numberOfClusters];
 
         double[][] sumPosition = new double[numberOfClusters][FeatureLength];
         int[] countPosition = new int[numberOfClusters];
-       // System.out.println(String.valueOf(clusters.length) + " clusters. Membership count:");
+        // System.out.println(String.valueOf(clusters.length) + " clusters. Membership count:");
         for (int ClusterID = 0; ClusterID < numberOfClusters; ClusterID++) {
             //System.out.println(clusters[ClusterID].size());
             for (int i = 0; i < clusters[ClusterID].size(); i++) {
@@ -160,5 +164,43 @@ public class BuildSURFVocabularies {
             }
         }
         return centroids;
+    }
+}
+
+class ListDirectories extends SimpleFileVisitor<Path> {
+
+    List<Path> files = new LinkedList<Path>();
+
+    @Override
+    public FileVisitResult preVisitDirectory(Path dir,
+            BasicFileAttributes attrs) {
+        //System.out.println("Dir: " + dir.toString());
+        return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+        files.add(file);
+        return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult visitFileFailed(Path file, IOException e) {
+        return FileVisitResult.CONTINUE;
+    }
+
+    public static List<Path> plainFileListing(String PathStr) {
+
+        Path search_directory_path = Paths.get(PathStr);
+        //define the starting file tree
+        ListDirectories traverser = new ListDirectories();
+        //instantiate the walk
+        try {
+            Files.walkFileTree(search_directory_path, traverser);
+            //start the walk
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+        return traverser.files;
     }
 }

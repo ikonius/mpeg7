@@ -164,7 +164,7 @@ public class ExistDB {
         col.close();
         return childRes;
     }
-
+    
     /**
      * This method returns the contents of an X3D Resource, based on the
      * X3DResourceDetail given.
