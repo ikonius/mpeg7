@@ -77,6 +77,7 @@
     </xsl:template>
     <xsl:template name="shapeExtraction">
         <xsl:param name="stringOfIFS"/>
+        <xsl:param name="stringOfSGD"/>        
         <xsl:variable name="countPoints" select="count(tokenize($stringOfIFS, ' '))"/>
         <xsl:element name="Shape3D">
             <xsl:attribute name="xsi:type">
@@ -104,9 +105,22 @@
                 <xsl:value-of select="tokenize($stringOfIFS, ' ')[$countPoints]"/>
             </xsl:element>
         </xsl:element>
+         
+        <xsl:variable name="SGDParts" select="tokenize($stringOfSGD,';')"/>        
+        <ShapeGoogle xsi:type="ShapeGoogleType">   
+                    
+            <Vocabulary size="{$SGDParts[1]}" location="{concat('vocab',$SGDParts[1],'.mat')}"/>
+            <BagOfFeatures>                       
+                <xsl:value-of select="$SGDParts[2]"/>                
+            </BagOfFeatures>
+            <SpatiallySensitiveBagOfFeatures>                       
+                <xsl:value-of select="$SGDParts[last()]"/>                
+            </SpatiallySensitiveBagOfFeatures>
+        </ShapeGoogle>  
     </xsl:template>
     <xsl:template name="extrusionShapeExtraction">
         <xsl:param name="stringOfExtr"/>
+        <xsl:param name="stringOfSGD"/>           
         <xsl:variable name="countPoints" select="count(tokenize($stringOfExtr, ' '))"/>
         <xsl:element name="Shape3D">
             <xsl:attribute name="xsi:type">
@@ -134,6 +148,16 @@
                 <xsl:value-of select="tokenize($stringOfExtr, ' ')[$countPoints]"/>
             </xsl:element>
         </xsl:element>
+        <xsl:variable name="SGDParts" select="tokenize($stringOfSGD,';')"/>        
+        <ShapeGoogle xsi:type="ShapeGoogleType">                       
+            <Vocabulary size="{$SGDParts[1]}" location="{concat('vocab',$SGDParts[1],'.mat')}"/>
+            <BagOfFeatures>                       
+                <xsl:value-of select="$SGDParts[2]"/>                
+            </BagOfFeatures>
+            <SpatiallySensitiveBagOfFeatures>                       
+                <xsl:value-of select="$SGDParts[last()]"/>                
+            </SpatiallySensitiveBagOfFeatures>
+        </ShapeGoogle>  
     </xsl:template>
     <xsl:template name="extrusionBBoxTemplate">
         <xsl:param name="stringOfExtrBBox"/>

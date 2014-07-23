@@ -39,7 +39,9 @@ public class IFSDetector extends GeometryDetector {
 
         List totalPointParts = null;
         ArrayList<String> resultedIFSExtractionList = new ArrayList<String>();
+        ArrayList<String> resultedSGDExtractionList = new ArrayList<String>();
         StringBuilder IFSStringBuilder = new StringBuilder();
+        StringBuilder SGDStringBuilder = new StringBuilder();
         XPath xPath = XPathFactory.newInstance().newXPath();
         this.getDoc().getDocumentElement().normalize();
         NodeList ifsSet = (NodeList) xPath.evaluate("//Shape/IndexedFaceSet", this.getDoc().getDocumentElement(), XPathConstants.NODESET);
@@ -81,7 +83,7 @@ public class IFSDetector extends GeometryDetector {
             }
 
             String points = coordinate.getAttribute("point").replaceAll("\\r|\\n", " ").trim().replaceAll(" +", " ").replaceAll(",", "");
-            coordIndex = coordIndex.replaceAll("\\r|\\n", " ").trim().replaceAll(" +", " ").replaceAll(",", "");         
+            coordIndex = coordIndex.replaceAll("\\r|\\n", " ").trim().replaceAll(" +", " ").replaceAll(",", "");
             Scanner sc = new Scanner(coordIndex).useDelimiter(" ");
 
             int maxCoordIndex = 0;
@@ -103,19 +105,34 @@ public class IFSDetector extends GeometryDetector {
                 coordIndexArray[0] = coordIndex;
             }
 
+            String[] totalPointPartsArray = (String[]) totalPointParts.toArray(new String[0]);
             coordDictParams.put("coordIndex", coordIndexArray);
-            pointDictParams.put("points", (String[]) totalPointParts.toArray(new String[0]));
+            pointDictParams.put("points", totalPointPartsArray);
             String coordTempFile = writeParamsToFile(coordDictParams, new File("coordIndex.txt"), this.getWriter());
             String pointTempFile = writeParamsToFile(pointDictParams, new File("point.txt"), this.getWriter());
             String[] tempFiles = {coordTempFile, pointTempFile};
             String resultedExtraction = ShapeIndexExtraction.shapeIndexEctraction(tempFiles);
             resultedIFSExtractionList.add(resultedExtraction);
+            //ShapeGoogleExtraction
+            int vocabularySize = 32;
+            ShapeGoogleExtraction shExtraction = new ShapeGoogleExtraction(points, coordIndex, vocabularySize);
+            resultedSGDExtractionList.add(shExtraction.getStringRepresentation());
         }
         for (int i = 0; i < resultedIFSExtractionList.size(); i++) {
             IFSStringBuilder.append(resultedIFSExtractionList.get(i));
             IFSStringBuilder.append("#");
         }
-        this.getParamMap().put("IFSPointsExtraction", IFSStringBuilder.toString());
+        if (IFSStringBuilder.length() > 0) {
+            this.getParamMap().put("IFSPointsExtraction", IFSStringBuilder.toString());
+        }
+
+        for (int i = 0; i < resultedSGDExtractionList.size(); i++) {
+            SGDStringBuilder.append(resultedSGDExtractionList.get(i));
+            SGDStringBuilder.append("#");
+        }
+        if (SGDStringBuilder.length() > 0) {
+            this.getParamMap().put("SGD", SGDStringBuilder.toString());
+        }
     }
 
     @Override

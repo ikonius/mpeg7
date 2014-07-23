@@ -56,7 +56,7 @@ public abstract class GeometryDetector {
     }
 
     public HashMap<String, String> getParamMap() {
-        return paramMap;
+        return this.paramMap;
     }
     
     

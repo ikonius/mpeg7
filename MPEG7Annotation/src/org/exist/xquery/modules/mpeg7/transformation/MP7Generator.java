@@ -35,17 +35,19 @@ public class MP7Generator {
 
     private static final Logger logger = Logger.getLogger(MP7Generator.class);
     protected X3DResourceDetail x3dResource;
-    protected HashMap<String, String> paramDictMap;
-    protected HashMap<String, String> histograms;
-    protected HashMap<String, String> scalableColors;
-    protected HashMap<String, String> surfeatures;
+    protected HashMap<String, String> extrusionParamMap, ifsParamMap, ilsParamMap, histograms, scalableColors, surfeatures;
+//    protected HashMap<String, String> histograms;
+//    protected HashMap<String, String> scalableColors;
+//    protected HashMap<String, String> surfeatures;
     protected Transformer transformer;
     protected TransformerFactory factory;
     protected Source xslStream;
 
-    public MP7Generator(X3DResourceDetail x3dResource, HashMap<String, String> paramDictMap, HashMap<String, String> histograms, HashMap<String, String> scalableColors, HashMap<String, String> surfeatures, String xslSource) {
+    public MP7Generator(X3DResourceDetail x3dResource, HashMap<String, String> ilsParamMap, HashMap<String, String> ifsParamMap, HashMap<String, String> extrusionParamMap, HashMap<String, String> histograms, HashMap<String, String> scalableColors, HashMap<String, String> surfeatures, String xslSource) {
         this.x3dResource = x3dResource;
-        this.paramDictMap = paramDictMap;
+        this.extrusionParamMap = extrusionParamMap;
+        this.ifsParamMap = ifsParamMap;
+        this.ilsParamMap = ilsParamMap;
         this.histograms = histograms;
         this.scalableColors = scalableColors;
         this.surfeatures = surfeatures;
@@ -53,16 +55,8 @@ public class MP7Generator {
         this.xslStream = new StreamSource(new ByteArrayInputStream(xslSource.getBytes()));
     }
 
-    public HashMap<String, String> getParamDictMap() {
-        return paramDictMap;
-    }
-
     public X3DResourceDetail getX3dResource() {
         return x3dResource;
-    }
-
-    public void setParamDictMap(HashMap<String, String> paramDictMap) {
-        this.paramDictMap = paramDictMap;
     }
 
     public void setX3dResource(X3DResourceDetail x3dResource) {
@@ -104,7 +98,6 @@ public class MP7Generator {
     public void setScalableColors(HashMap<String, String> scalableColors) {
         this.scalableColors = scalableColors;
     }
-    
 
     public void generateDescription() {
         try {
@@ -127,7 +120,7 @@ public class MP7Generator {
             Validator mpeg7Validator = new Validator(mp7File);
             Boolean isValid = mpeg7Validator.isValid();
             // if (isValid) {
-            db.storeResource(x3dResource, mp7File);            
+            db.storeResource(x3dResource, mp7File);
             //}            
         } catch (XMLDBException ex) {
             logger.error("XMLDBException: ", ex);
@@ -141,24 +134,43 @@ public class MP7Generator {
             logger.error("IllegalArgumentException: ", ex);
         } catch (InstantiationException ex) {
             logger.error("InstantiationException: ", ex);
-        }        
+        }
     }
 
     private void setTranformerParameters() {
 
-        this.transformer.setParameter("filename", this.x3dResource.parentPath + "/" + this.x3dResource.resourceFileName);        
-        for (Map.Entry me : this.paramDictMap.entrySet()) {
-            this.transformer.setParameter(me.getKey().toString(), me.getValue().toString());
+        this.transformer.setParameter("filename", this.x3dResource.parentPath + "/" + this.x3dResource.resourceFileName);
+        if (!this.extrusionParamMap.isEmpty()) {
+            for (Map.Entry me : this.extrusionParamMap.entrySet()) {
+                this.transformer.setParameter(me.getKey().toString(), me.getValue().toString());
+            }
         }        
-        for (Map.Entry entry : this.histograms.entrySet()) {
-            this.transformer.setParameter(entry.getKey().toString(), entry.getValue().toString());
+        if (!this.ifsParamMap.isEmpty()) {
+            for (Map.Entry me : this.ifsParamMap.entrySet()) {
+                this.transformer.setParameter(me.getKey().toString(), me.getValue().toString());
+            }
         }
-        for (Map.Entry entry : this.scalableColors.entrySet()) {
-            this.transformer.setParameter(entry.getKey().toString(), entry.getValue().toString());
+        if (!this.ilsParamMap.isEmpty()) {
+            for (Map.Entry me : this.ilsParamMap.entrySet()) {
+                this.transformer.setParameter(me.getKey().toString(), me.getValue().toString());
+            }
         }
-        for (Map.Entry entry : this.surfeatures.entrySet()) {
-            this.transformer.setParameter(entry.getKey().toString(), entry.getValue().toString());
+        if (!this.histograms.isEmpty()) {
+            for (Map.Entry entry : this.histograms.entrySet()) {
+                this.transformer.setParameter(entry.getKey().toString(), entry.getValue().toString());
+            }
         }
+        if (!this.scalableColors.isEmpty()) {
+            for (Map.Entry entry : this.scalableColors.entrySet()) {
+                this.transformer.setParameter(entry.getKey().toString(), entry.getValue().toString());
+            }
+        }
+        if (!this.surfeatures.isEmpty()) {
+            for (Map.Entry entry : this.surfeatures.entrySet()) {
+                this.transformer.setParameter(entry.getKey().toString(), entry.getValue().toString());
+            }
+        }
+        
     }
 }
 

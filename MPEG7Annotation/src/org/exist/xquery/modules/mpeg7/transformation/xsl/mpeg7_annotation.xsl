@@ -15,6 +15,7 @@
     <xsl:param name="EHDs"/>
     <xsl:param name="SCDs"/>
     <xsl:param name="SURF"/>
+    <xsl:param name="SGD"/>    
     <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
     <xsl:template match="/">
         <Mpeg7 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:mpeg:mpeg7:schema:2001">
@@ -33,7 +34,8 @@
                             <xsl:with-param name="extrusionBBoxParams" select="$extrusionBBoxParams"/>
                             <xsl:with-param name="EHDs" select="$EHDs"/>
                             <xsl:with-param name="SCDs" select="$SCDs"/>
-                            <xsl:with-param name="SURF" select="$SURF"/>                            
+                            <xsl:with-param name="SURF" select="$SURF"/>   
+                            <xsl:with-param name="SGD" select="$SGD"/>                                 
                         </xsl:call-template>
                         <xsl:call-template name="Lighting_Descriptions"/>
                         <xsl:call-template name="Viewpoint_Descriptions"/>

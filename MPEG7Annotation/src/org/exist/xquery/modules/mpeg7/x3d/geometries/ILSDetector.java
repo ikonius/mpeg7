@@ -39,7 +39,9 @@ public class ILSDetector extends GeometryDetector {
 
         List totalPointParts = null;
         ArrayList<String> resultedIFSExtractionList = new ArrayList<String>();
+        ArrayList<String> resultedSGDExtractionList = new ArrayList<String>();
         StringBuilder IFSStringBuilder = new StringBuilder();
+        StringBuilder SGDStringBuilder = new StringBuilder();
         XPath xPath = XPathFactory.newInstance().newXPath();
         this.getDoc().getDocumentElement().normalize();
         NodeList ifsSet = (NodeList) xPath.evaluate("//Shape/IndexedLineSet", this.getDoc().getDocumentElement(), XPathConstants.NODESET);
@@ -108,12 +110,27 @@ public class ILSDetector extends GeometryDetector {
             String[] tempFiles = {coordTempFile, pointTempFile};
             String resultedExtraction = ShapeIndexExtraction.shapeIndexEctraction(tempFiles);
             resultedIFSExtractionList.add(resultedExtraction);
+
+            //ShapeGoogleExtraction
+            int vocabularySize = 32;
+            ShapeGoogleExtraction shExtraction = new ShapeGoogleExtraction(points, coordIndex, vocabularySize);
+            resultedSGDExtractionList.add(shExtraction.getStringRepresentation());
         }
         for (int i = 0; i < resultedIFSExtractionList.size(); i++) {
             IFSStringBuilder.append(resultedIFSExtractionList.get(i));
             IFSStringBuilder.append("#");
         }
-        this.getParamMap().put("ILSPointsExtraction", IFSStringBuilder.toString());
+        if (IFSStringBuilder.length() > 0) {
+            this.getParamMap().put("ILSPointsExtraction", IFSStringBuilder.toString());
+        }
+
+        for (int i = 0; i < resultedSGDExtractionList.size(); i++) {
+            SGDStringBuilder.append(resultedSGDExtractionList.get(i));
+            SGDStringBuilder.append("#");
+        }
+        if (SGDStringBuilder.length() > 0) {
+            this.getParamMap().put("SGD", SGDStringBuilder.toString());
+        }
     }
 
     @Override

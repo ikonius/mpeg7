@@ -87,7 +87,7 @@ public class BatchTransform extends BasicFunction {
                         ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
                         //extrusionDetector.processShapes();
                         TextureDetector textureDetector = new TextureDetector(doc, detail.parentPath);                        
-                        MP7Generator mp7Generator = new MP7Generator(detail, extrusionDetector.getParamMap(), textureDetector.getHistograms(), textureDetector.getScalableColors(), textureDetector.getSURF(), xslSource);
+                        MP7Generator mp7Generator = new MP7Generator(detail, ilsDetector.getParamMap(), ifsDetector.getParamMap(), extrusionDetector.getParamMap(), textureDetector.getHistograms(), textureDetector.getScalableColors(), textureDetector.getSURF(), xslSource);
                         mp7Generator.generateDescription();
 
                     } catch (XMLDBException ex) {

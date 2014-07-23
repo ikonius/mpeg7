@@ -8,6 +8,7 @@
     <xsl:param name="EHDs"/>
     <xsl:param name="SCDs"/>
     <xsl:param name="SURF"/>
+    <xsl:param name="SGD"/>    
     <xsl:template name="Geometry_Descriptions">
         <xsl:if test="//Shape">
             <Collection xsi:type="DescriptorCollectionType" id="Geometries">  
@@ -345,18 +346,21 @@
                     <xsl:variable name="positionOfIFS" select="count(preceding::IndexedFaceSet) + 1"/>
                     <xsl:call-template name="shapeExtraction">
                         <xsl:with-param name="stringOfIFS" select="tokenize($IFSPointsExtraction, '#')[$positionOfIFS]"/>
+                        <xsl:with-param name="stringOfSGD" select="tokenize($SGD, '#')[$positionOfIFS]"/>                                          
                     </xsl:call-template>
                 </xsl:if>
                 <xsl:if test="$shapeType = 'IndexedLineSet'">                    
                     <xsl:variable name="positionOfILS" select="count(preceding::IndexedLineSet) + 1"/>
                     <xsl:call-template name="shapeExtraction">
                         <xsl:with-param name="stringOfIFS" select="tokenize($ILSPointsExtraction, '#')[$positionOfILS]"/>
+                        <xsl:with-param name="stringOfSGD" select="tokenize($SGD, '#')[$positionOfILS]"/>
                     </xsl:call-template>
                 </xsl:if>
                 <xsl:if test="$shapeType = 'Extrusion'">                    
                     <xsl:variable name="positionOfExtr" select="count(preceding::Extrusion) + 1"/>
                     <xsl:call-template name="extrusionShapeExtraction">
                         <xsl:with-param name="stringOfExtr" select="tokenize($extrusionPointsExtraction, '#')[$positionOfExtr]"/>
+                        <xsl:with-param name="stringOfSGD" select="tokenize($SGD, '#')[$positionOfExtr]"/>                    
                     </xsl:call-template>
                 </xsl:if>
             </Geometry3D>
@@ -480,6 +484,6 @@
             <BagOfSURF>                       
                 <xsl:value-of select="$SURFParts[last()]"/>                
             </BagOfSURF>
-        </Descriptor>
+        </Descriptor>        
     </xsl:template>
 </xsl:stylesheet>

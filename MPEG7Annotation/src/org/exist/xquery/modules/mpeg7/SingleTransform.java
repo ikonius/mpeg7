@@ -96,9 +96,9 @@ public class SingleTransform extends BasicFunction {
             ILSDetector ilsDetector = new ILSDetector(doc);
             //ilsDetector.processShapes();
             ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
-            //extrusionDetector.processShapes();
+            //extrusionDetector.processShapes(); 
             TextureDetector textureDetector = new TextureDetector(doc, resource.parentPath);
-            MP7Generator mp7Generator = new MP7Generator(resource, extrusionDetector.getParamMap(), textureDetector.getHistograms(), textureDetector.getScalableColors(), textureDetector.getSURF(), xslSource);
+            MP7Generator mp7Generator = new MP7Generator(resource, ilsDetector.getParamMap(), ifsDetector.getParamMap(), extrusionDetector.getParamMap(), textureDetector.getHistograms(), textureDetector.getScalableColors(), textureDetector.getSURF(), xslSource);
             mp7Generator.generateDescription();
 
             //logger.debug("No of MPEG-7 files: " + mpeg7counter); //debugging

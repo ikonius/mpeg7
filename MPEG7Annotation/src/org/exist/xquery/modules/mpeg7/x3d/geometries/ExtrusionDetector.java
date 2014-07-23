@@ -14,6 +14,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -23,6 +24,8 @@ import org.w3c.dom.NodeList;
  * @author Patti Spala <pd.spala@gmail.com>
  */
 public class ExtrusionDetector extends GeometryDetector {
+
+    private static final Logger logger = Logger.getLogger(ExtrusionDetector.class);
 
     public ExtrusionDetector(Document doc) throws XPathExpressionException, IOException {
         super(doc);
@@ -35,8 +38,10 @@ public class ExtrusionDetector extends GeometryDetector {
         String solid, ccw, convex, beginCap, endCap, creaseAngle;
         ArrayList<String> resultedExtrExtractionList = new ArrayList<String>();
         ArrayList<String> resultedExtrBBoxList = new ArrayList<String>();
+        ArrayList<String> resultedSGDExtractionList = new ArrayList<String>();
         StringBuilder ExtrShapeStringBuilder = new StringBuilder();
         StringBuilder ExtrBBoxStringBuilder = new StringBuilder();
+        StringBuilder SGDStringBuilder = new StringBuilder();
 
         this.getDoc().getDocumentElement().normalize();
         XPath xPath = XPathFactory.newInstance().newXPath();
@@ -134,13 +139,18 @@ public class ExtrusionDetector extends GeometryDetector {
             String coordTempFile = writeParamsToFile(dictParams, this.getFile(), this.getWriter());
 
             String[] ExtrTempFile = {coordTempFile};
-            String resultedExtraction = new ExtrusionToIFSFilter(ExtrTempFile).filterGeometry();
+            ExtrusionToIFSFilter ifsFilter = new ExtrusionToIFSFilter(ExtrTempFile);
+            String resultedExtraction = ifsFilter.filterGeometry();
 
             String ExtrBBox = resultedExtraction.substring(0, resultedExtraction.indexOf("&") - 1);
             String ExtrShape = resultedExtraction.substring(resultedExtraction.indexOf("&") + 1);
 
             resultedExtrBBoxList.add(ExtrBBox);
             resultedExtrExtractionList.add(ExtrShape);
+
+            int vocabularySize = 32;
+            ShapeGoogleExtraction shExtraction = new ShapeGoogleExtraction(ifsFilter.getIFSTranslatedData()[0], ifsFilter.getIFSTranslatedData()[1], vocabularySize);
+            resultedSGDExtractionList.add(shExtraction.getStringRepresentation());
 
         }
         for (int i = 0; i < resultedExtrExtractionList.size(); i++) {
@@ -151,9 +161,18 @@ public class ExtrusionDetector extends GeometryDetector {
             ExtrBBoxStringBuilder.append("#");
 
         }
-        this.getParamMap().put("extrusionPointsExtraction", ExtrShapeStringBuilder.toString());
-        this.getParamMap().put("extrusionBBoxParams", ExtrBBoxStringBuilder.toString());
+        if (ExtrShapeStringBuilder.length() > 0) {
+            this.getParamMap().put("extrusionPointsExtraction", ExtrShapeStringBuilder.toString());
+            this.getParamMap().put("extrusionBBoxParams", ExtrBBoxStringBuilder.toString());
+        }
 
+        for (int i = 0; i < resultedSGDExtractionList.size(); i++) {
+            SGDStringBuilder.append(resultedSGDExtractionList.get(i));
+            SGDStringBuilder.append("#");
+        }
+        if (SGDStringBuilder.length() > 0) {
+            this.getParamMap().put("SGD", SGDStringBuilder.toString());
+        }
     }
 
     @Override

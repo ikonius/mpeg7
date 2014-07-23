@@ -234,7 +234,7 @@ public class ExtrusionToIFSFilter {
         for (int i = 0; i < indexesLength; i++) {
             indexes[i][0] = output_indices[i];
             indexes[i][1] = output_indices[i + 1];
-            indexes[i][2] = output_indices[i + 2];            
+            indexes[i][2] = output_indices[i + 2];
         }
         String shapeIndex = ShapeIndexExtraction.PerformActualComputation(points, indexes);
         bboxBuffer.append(shapeIndex);
@@ -242,6 +242,27 @@ public class ExtrusionToIFSFilter {
         return bboxBuffer.toString();
     }
 
+    public String[] getIFSTranslatedData() {
+
+        StringBuilder ifsPointsBuffer = new StringBuilder();
+        for (int i = 0; i < coordinates.length; i++) {
+            ifsPointsBuffer.append(coordinates[i]);
+            if (i < coordinates.length - 1) {
+                ifsPointsBuffer.append(' ');
+            }
+        }
+
+        StringBuilder ifsCoordsIndexBuffer = new StringBuilder();
+        for (int i = 0; i < coordIndices.length; i++) {
+            ifsCoordsIndexBuffer.append(coordIndices[i]);
+            if (i < coordIndices.length - 1) {
+                ifsCoordsIndexBuffer.append(' ');
+            }
+        }
+
+        String[] joined = new String[]{ifsPointsBuffer.toString(), ifsCoordsIndexBuffer.toString()};
+        return joined;
+    }
     //----------------------------------------------------------
     // Local Methods
     //----------------------------------------------------------
@@ -530,7 +551,7 @@ public class ExtrusionToIFSFilter {
             if (spineClosed) {
                 // spineClosed and not collinear - >  not all one point
                 y[0] = new Vector3f();
-                y[0].sub(spines[1], spines[last - 1]);               
+                y[0].sub(spines[1], spines[last - 1]);
                 if (!norm(y[0])) {
                     // bad case that the spine[n-2] == spine[1]
                     int w = last - 2;
