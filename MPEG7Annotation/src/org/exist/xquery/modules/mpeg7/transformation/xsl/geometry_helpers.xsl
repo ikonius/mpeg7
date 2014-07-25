@@ -19,7 +19,7 @@
             <xsl:otherwise>
                 <xsl:element name="XpointMinAndMax">
                     <xsl:value-of select="min(($Xpoint,number(tokenize($count2, ' ')[$count])))"/>
-                    <xsl:text/>
+                    <xsl:value-of select="' '"/>
                     <xsl:value-of select="max(($XpointMax,number(tokenize($count2, ' ')[$count])))"/>
                 </xsl:element>
             </xsl:otherwise>
@@ -44,7 +44,7 @@
             <xsl:otherwise>
                 <xsl:element name="YpointMINAndMAX">
                     <xsl:value-of select="min(($Ypoint,number(tokenize($count2, ' ')[$count])))"/>
-                    <xsl:text/>
+                    <xsl:value-of select="' '"/>
                     <xsl:value-of select="max(($YpointMax,number(tokenize($count2, ' ')[$count])))"/>
                 </xsl:element>
             </xsl:otherwise>
@@ -69,7 +69,7 @@
             <xsl:otherwise>
                 <xsl:element name="ZpointMINAndMAX">
                     <xsl:value-of select="min(($Zpoint,number(tokenize($count2, ' ')[$count])))"/>
-                    <xsl:text/>
+                   <xsl:value-of select="' '"/>
                     <xsl:value-of select="max(($ZpointMax,number(tokenize($count2, ' ')[$count])))"/>
                 </xsl:element>
             </xsl:otherwise>

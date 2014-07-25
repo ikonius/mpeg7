@@ -257,6 +257,7 @@
                 <xsl:when test="($shapeType = 'IndexedFaceSet') or ($shapeType = 'IndexedLineSet')">
                     <xsl:variable name="pointCoordinates" select="./Coordinate/@point"/>                        
                     <xsl:variable name="pointsNumber" select="count(tokenize($pointCoordinates, ' '))"/>
+                    
                     <!--KALEI ENA TEPLATE GIA THN EYRESI TON MAX KAI MIN TOY X APO TO ATTRIBUTE
                     point TOY NODE Coordinate ENOS IndexedFaceSet. OLA TA TEMPLATE PERIKLEIONTAI
                     SE ENA XEXORISTO VARIABLE POU PERIEXEI TA MIN KAI MAX KATHE AXIS POINT-->
@@ -286,7 +287,7 @@
                         </xsl:call-template>
                     </xsl:variable>
                     <BoundingBox3DSize>
-                        <xsl:attribute name="BoxWidth">
+                        <xsl:attribute name="BoxWidth">                           
                             <xsl:value-of select="tokenize($XpointsResults, ' ')[2] - tokenize($XpointsResults, ' ')[1]"/>
                         </xsl:attribute>
                         <xsl:attribute name="BoxHeight">
@@ -389,9 +390,9 @@
                 </Percentage>
                 <Index>                    
                     <xsl:value-of select="ceiling((number(tokenize($color, ' ')[1])) * 255)"/>
-                    <xsl:text/>
+                    <xsl:value-of select="' '"/>
                     <xsl:value-of select="ceiling((number(tokenize($color, ' ')[2])) * 255)"/>
-                    <xsl:text/>
+                    <xsl:value-of select="' '"/>
                     <xsl:value-of select="ceiling((number(tokenize($color, ' ')[3])) * 255)"/>
                 </Index>
             </Value>
