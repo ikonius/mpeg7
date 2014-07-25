@@ -64,10 +64,14 @@ public class BatchTransform extends BasicFunction {
         try {
             String collectionPath = args[0].getStringValue();
             //int mpeg7counter = 0; //debugging
+
+            //START - remove this connection to eXist
             ExistDB db = new ExistDB();
             db.registerInstance();
-            String xslSource = db.retrieveModule("mpeg7_annotation.xsl").toString();
-            List<X3DResourceDetail> x3dResources = db.getX3DResources(collectionPath);
+            String xslSource = db.retrieveModule("mpeg7_annotation.xsl").toString(); //get xsl from local file in project
+            List<X3DResourceDetail> x3dResources = db.getX3DResources(collectionPath); //change this to get the x3d files from a local unzipped folder - not from the db
+            //END - remove this connection to eXist
+            //START - This is the main logic - keep this
             if (!x3dResources.isEmpty()) {
                 //logger.debug("No of X3D files: " + x3dResources.size()); //debugging
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -76,7 +80,7 @@ public class BatchTransform extends BasicFunction {
                 for (X3DResourceDetail detail : x3dResources) {
                     try {
                         //logger.debug("Processing file: " + detail.resourceFileName);
-                        String x3dSource = db.retrieveDocument(detail).toString();
+                        String x3dSource = db.retrieveDocument(detail).toString(); //change logic to parse inline files from local folder - not from the db
                         Document doc = builder.parse(new ByteArrayInputStream(x3dSource.getBytes()));
                         InlineDetector inlDetector = new InlineDetector(doc, detail.parentPath);
                         doc = inlDetector.retrieveInlineNodes();
@@ -86,7 +90,7 @@ public class BatchTransform extends BasicFunction {
                         //ilsDetector.processShapes();
                         ExtrusionDetector extrusionDetector = new ExtrusionDetector(doc);
                         //extrusionDetector.processShapes();
-                        TextureDetector textureDetector = new TextureDetector(doc, detail.parentPath);                        
+                        TextureDetector textureDetector = new TextureDetector(doc, detail.parentPath);
                         MP7Generator mp7Generator = new MP7Generator(detail, ilsDetector.getParamMap(), ifsDetector.getParamMap(), extrusionDetector.getParamMap(), textureDetector.getHistograms(), textureDetector.getScalableColors(), textureDetector.getSURF(), xslSource);
                         mp7Generator.generateDescription();
 
@@ -124,6 +128,7 @@ public class BatchTransform extends BasicFunction {
             result.add(new BooleanValue(false));
         }
         return result;
+        //END - This is the main logic - keep this
     }
 
 }
