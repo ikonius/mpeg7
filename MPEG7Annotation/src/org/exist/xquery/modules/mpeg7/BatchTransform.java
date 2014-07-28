@@ -65,13 +65,11 @@ public class BatchTransform extends BasicFunction {
             String collectionPath = args[0].getStringValue();
             //int mpeg7counter = 0; //debugging
 
-            //START - remove this connection to eXist
+           
             ExistDB db = new ExistDB();
             db.registerInstance();
-            String xslSource = db.retrieveModule("mpeg7_annotation.xsl").toString(); //get xsl from local file in project
-            List<X3DResourceDetail> x3dResources = db.getX3DResources(collectionPath); //change this to get the x3d files from a local unzipped folder - not from the db
-            //END - remove this connection to eXist
-            //START - This is the main logic - keep this
+            String xslSource = db.retrieveModule("mpeg7_annotation.xsl").toString(); 
+            List<X3DResourceDetail> x3dResources = db.getX3DResources(collectionPath);            
             if (!x3dResources.isEmpty()) {
                 //logger.debug("No of X3D files: " + x3dResources.size()); //debugging
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -127,8 +125,7 @@ public class BatchTransform extends BasicFunction {
             logger.error("ClassNotFoundException: ", ex);
             result.add(new BooleanValue(false));
         }
-        return result;
-        //END - This is the main logic - keep this
+        return result;      
     }
 
 }
